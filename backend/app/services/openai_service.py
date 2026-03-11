@@ -1,14 +1,10 @@
 import os
-import openai
 from openai import AsyncOpenAI
 from ..config import settings
 
-# Configurar OpenAI
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Cliente asíncrono para OpenAI
+# Cliente asíncrono para OpenAI (v2.x: api_key solo en el constructor)
 openai_client = AsyncOpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
+    api_key=os.getenv("OPENAI_API_KEY") or getattr(settings, "OPENAI_API_KEY", None) or "",
     base_url="https://api.openai.com/v1"
 )
 
