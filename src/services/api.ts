@@ -9,6 +9,20 @@ function resolveApiBaseUrl(): string {
   return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 }
 const API_BASE_URL = resolveApiBaseUrl();
+
+// Avisar si en producción (origen no localhost) pero la API sigue siendo localhost
+if (typeof window !== 'undefined') {
+  const origin = window.location.origin;
+  const isProd = origin.startsWith('https://') && !origin.includes('localhost');
+  const isLocalhostApi = API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
+  if (isProd && isLocalhostApi) {
+    console.error(
+      '[Innexia] La API está configurada en localhost pero la app se carga desde',
+      origin,
+      '→ Define VITE_API_BASE_URL en Railway (servicio frontend) y redepliega.'
+    );
+  }
+}
 const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000'); // 10 segundos por defecto
 
 // Tipos de respuesta de la API

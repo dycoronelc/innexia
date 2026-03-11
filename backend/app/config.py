@@ -29,16 +29,24 @@ class Settings:
     MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", "10485760"))
     ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".docx", ".doc", ".xlsx", ".xls", ".txt"]
 
-    # Configuración de CORS (en producción definir CORS_ORIGINS como URLs separadas por coma)
-    _cors_env = os.getenv("CORS_ORIGINS", "").strip()
-    CORS_ORIGINS = [x.strip() for x in _cors_env.split(",") if x.strip()] if _cors_env else [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:5173",
-    ]
+    # Configuración de CORS (en producción: CORS_ORIGINS = https://frontend-xxx.up.railway.app sin comillas)
+    _cors_env = os.getenv("CORS_ORIGINS", "").strip().strip('"').strip("'")
+    if _cors_env:
+        # Separar por coma y quitar espacios/comillas de cada origen
+        CORS_ORIGINS = [
+            x.strip().strip('"').strip("'")
+            for x in _cors_env.split(",")
+            if x.strip()
+        ]
+    else:
+        CORS_ORIGINS = [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:3001",
+            "http://127.0.0.1:5173",
+        ]
 
     # Configuración de la aplicación
     APP_NAME = os.getenv("APP_NAME", "Innexia BMC Backend")

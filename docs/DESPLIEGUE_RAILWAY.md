@@ -131,7 +131,7 @@ En **Variables** del servicio frontend **debes definir**:
 | `VITE_API_BASE_URL`  | URL pública del backend (ej. `https://backend-xxxx.up.railway.app`), **sin** barra final. |
 
 **⚠️ Por qué el frontend llama a localhost:8000:**  
-El build del frontend ejecuta `scripts/write-config.cjs`, que lee **`VITE_API_BASE_URL`** y escribe `public/config.js` con la URL de la API. Si esa variable **no está definida** en Railway cuando se hace el build, se usa `http://localhost:8000` y la app en producción seguirá llamando a localhost.
+El build del frontend ejecuta `scripts/write-config.cjs`, que lee **`VITE_API_BASE_URL`** y escribe `public/config.js` con la URL de la API. Si esa variable **no está definida** en Railway cuando se hace el build, en Railway el build **fallará** con un mensaje claro; en local se usará `http://localhost:8000`. Si ya desplegaste antes de añadir la variable, el deploy actual sigue usando localhost hasta que **redespliegues**.
 
 **Qué hacer si ya desplegaste y ves `POST http://localhost:8000/api/auth/login-company net::ERR_CONNECTION_REFUSED`:**
 
@@ -210,8 +210,8 @@ Cada vez que hagas **push a la rama conectada** (por defecto `main`), Railway vo
 - **Logs**: En cada servicio, pestaña **Deployments** → elige el último deploy → **View Logs** (build y runtime).
 - **Build falla (backend)**: Revisa que Root Directory sea `backend` y que `requirements.txt` exista ahí.
 - **Build falla (frontend)**: Revisa que en la raíz del repo esté `package.json` y que el build sea `npm run build` y la salida en `dist`.
-- **Frontend llama a localhost:8000 / ERR_CONNECTION_REFUSED**: El frontend en producción está usando la URL por defecto. (1) En el **servicio frontend** de Railway → **Variables**, define **`VITE_API_BASE_URL`** = URL pública del backend (ej. `https://tu-backend.up.railway.app`, sin barra final). (2) **Redespliega** el frontend (Redeploy o push a la rama) para que se vuelva a hacer el build con esa variable.
+- **Frontend llama a localhost:8000 / ERR_CONNECTION_REFUSED**: El frontend en producción está usando la URL por defecto. (1) En el **servicio frontend** de Railway → **Variables**, define **`VITE_API_BASE_URL`** = URL pública del backend (ej. `https://tu-backend.up.railway.app`, sin barra final). (2) **Redespliega** el frontend (Redeploy o push a la rama) para que se vuelva a hacer el build con esa variable. Si el build del frontend falla con *"ERROR: En Railway debes definir la variable VITE_API_BASE_URL"*, añade esa variable en el servicio frontend y vuelve a desplegar.
 - **Error de base de datos / no se puede conectar**: (1) Comprueba que `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` sean los de tu MySQL en GoDaddy. (2) Verifica que en GoDaddy esté permitido el **acceso remoto** a MySQL (Remote MySQL) desde las IPs de Railway o desde cualquier host si tu plan lo permite. (3) Si el host es `localhost`, solo funcionará dentro del mismo servidor; para Railway necesitas un host accesible por internet (dominio o IP pública del servidor GoDaddy).
-- **CORS**: Que `CORS_ORIGINS` sea exactamente la URL del frontend (https, sin `/` al final).
+- **CORS / "No 'Access-Control-Allow-Origin' header"**: (1) En el **servicio backend** → Variables, `CORS_ORIGINS` debe ser **exactamente** la URL del frontend, por ejemplo `https://frontend-production-24735.up.railway.app` (con `https://`, **sin** comillas, **sin** barra final). (2) Si la cambiaste, **redespliega el backend**. (3) En los logs del backend al arrancar verás "CORS allow_origins: [...]" para comprobar qué se cargó.
 
 Con estos pasos deberías tener InnovAI desplegada en Railway (frontend + backend) usando MySQL en GoDaddy.

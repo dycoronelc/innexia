@@ -20,13 +20,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configurar CORS
+# Configurar CORS (en producción CORS_ORIGINS debe incluir la URL del frontend, ej. https://frontend-xxx.up.railway.app)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Montar archivos estáticos
@@ -66,6 +67,10 @@ app.include_router(news_feed.router, prefix="/api", tags=["News Feed"])
 
 # Agent Output (n8n) - salida del agente por proyecto
 app.include_router(project_agent_output.router, prefix="/api", tags=["Agent Output"])
+
+@app.on_event("startup")
+async def startup_log():
+    print("CORS allow_origins:", settings.CORS_ORIGINS)
 
 @app.get("/")
 async def root():
