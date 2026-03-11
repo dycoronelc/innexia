@@ -1,8 +1,14 @@
 // Importación removida ya que no se usa
 
 
-// Configuración de la API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// Configuración de la API: config.js (generado en build) > env VITE_API_BASE_URL > localhost
+function resolveApiBaseUrl(): string {
+  if (typeof window !== 'undefined' && (window as unknown as { __INNEXIA_API_BASE_URL__?: string }).__INNEXIA_API_BASE_URL__) {
+    return (window as unknown as { __INNEXIA_API_BASE_URL__: string }).__INNEXIA_API_BASE_URL__;
+  }
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+}
+const API_BASE_URL = resolveApiBaseUrl();
 const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000'); // 10 segundos por defecto
 
 // Tipos de respuesta de la API

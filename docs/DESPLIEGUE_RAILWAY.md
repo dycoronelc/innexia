@@ -131,16 +131,17 @@ En **Variables** del servicio frontend **debes definir**:
 | `VITE_API_BASE_URL`  | URL pública del backend (ej. `https://backend-xxxx.up.railway.app`), **sin** barra final. |
 
 **⚠️ Por qué el frontend llama a localhost:8000:**  
-Con Vite, `VITE_API_BASE_URL` se **inyecta en tiempo de build**. Si no existe cuando Railway hace el build del frontend, el código usa el valor por defecto `http://localhost:8000` y queda fijo en el JavaScript generado.
+El build del frontend ejecuta `scripts/write-config.cjs`, que lee **`VITE_API_BASE_URL`** y escribe `public/config.js` con la URL de la API. Si esa variable **no está definida** en Railway cuando se hace el build, se usa `http://localhost:8000` y la app en producción seguirá llamando a localhost.
 
 **Qué hacer si ya desplegaste y ves `POST http://localhost:8000/api/auth/login-company net::ERR_CONNECTION_REFUSED`:**
 
 1. Entra al **servicio frontend** en Railway → **Variables**.
-2. Añade (o edita) **`VITE_API_BASE_URL`** con la URL real del backend, por ejemplo:  
+2. Añade **`VITE_API_BASE_URL`** con la URL pública del backend, por ejemplo:  
    `https://tu-backend.up.railway.app`  
-   (la misma que usas para el backend, sin barra al final).
-3. **Vuelve a desplegar el frontend**: en el servicio frontend, pestaña **Deployments** → **Redeploy** en el último deploy, o haz un **push** a la rama conectada.  
-   Sin un **nuevo build**, el cambio de variable no se aplica.
+   (sin barra final). Comprueba que el nombre sea exactamente `VITE_API_BASE_URL`.
+3. **Redespliega el frontend**: pestaña **Deployments** → **Redeploy** en el último deploy (o haz **push** a la rama).  
+   Tiene que ejecutarse un **nuevo build** para que el script vuelva a generar `config.js` con esa URL.
+4. Después del deploy, haz **recarga forzada** en el navegador (Ctrl+Shift+R o Cmd+Shift+R) para no usar la caché antigua.
 
 ### 4.4 Dominio público (frontend)
 

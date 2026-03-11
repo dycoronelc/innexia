@@ -126,9 +126,17 @@ export const useOffline = (): UseOfflineReturn => {
   };
 };
 
+// Misma URL base que api.ts (config.js > VITE_API_BASE_URL > localhost)
+function getApiBaseUrl(): string {
+  if (typeof window !== 'undefined' && (window as unknown as { __INNEXIA_API_BASE_URL__?: string }).__INNEXIA_API_BASE_URL__) {
+    return (window as unknown as { __INNEXIA_API_BASE_URL__: string }).__INNEXIA_API_BASE_URL__;
+  }
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+}
+
 // Helper functions for syncing different types of data
 async function syncProject(item: OfflineData) {
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const baseUrl = getApiBaseUrl();
   
   switch (item.action) {
     case 'create':
@@ -154,7 +162,7 @@ async function syncProject(item: OfflineData) {
 }
 
 async function syncCanvas(item: OfflineData) {
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const baseUrl = getApiBaseUrl();
   
   switch (item.action) {
     case 'create':
@@ -180,7 +188,7 @@ async function syncCanvas(item: OfflineData) {
 }
 
 async function syncDocument(item: OfflineData) {
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const baseUrl = getApiBaseUrl();
   
   switch (item.action) {
     case 'create':
