@@ -17,6 +17,7 @@ class ProjectAnalisisRiesgos(Base):
 
     nivel_riesgo_general = Column(String(50), nullable=True)
     recomendaciones = Column(JSON, nullable=True)  # array of strings
+    assumptions = Column(Text, nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -29,6 +30,7 @@ class ProjectRiesgo(Base):
     __tablename__ = "project_riesgo"
 
     id = Column(Integer, primary_key=True, index=True)
+    risk_code = Column(String(50), nullable=True)
     project_id = Column(Integer, nullable=False)
 
     categoria = Column(String(100), nullable=True)
@@ -36,6 +38,8 @@ class ProjectRiesgo(Base):
     probabilidad = Column(String(50), nullable=True)
     impacto = Column(String(50), nullable=True)
     mitigacion = Column(Text, nullable=True)
+    owner = Column(String(100), nullable=True)
+    source_request_id = Column(String(64), nullable=True)
     orden = Column(Integer, default=0)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

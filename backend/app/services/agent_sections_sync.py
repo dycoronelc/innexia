@@ -4,9 +4,24 @@ riesgos, veredicto) desde el JSON de project_agent_output a sus tablas canónica
 Cada tabla es la fuente única para visualización y edición; el JSON en project_agent_output
 queda como auditoría. Un futuro agente puede re-analizar y actualizar estas tablas.
 """
+from datetime import date
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
+
+
+def _parse_date(value: Any) -> Optional[date]:
+    """Convierte string ISO o date a date para columnas DATE."""
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str):
+        try:
+            return date.fromisoformat(value[:10])
+        except (ValueError, TypeError):
+            return None
+    return None
 
 from ..models.project_estrategia_comercial import ProjectEstrategiaComercial
 from ..models.project_roadmap import ProjectRoadmap
@@ -19,11 +34,21 @@ def sync_agent_estrategia_comercial(project_id: int, data: Optional[Dict[str, An
     if not data:
         return False
     existing = db.query(ProjectEstrategiaComercial).filter(ProjectEstrategiaComercial.project_id == project_id).first()
+    extras = {
+        "swot": data.get("swot"),
+        "objetivos_estrategicos": data.get("objetivos_estrategicos"),
+        "ventajas_competitivas": data.get("ventajas_competitivas"),
+        "factores_criticos_exito": data.get("factores_criticos_exito"),
+        "recomendaciones_estrategicas": data.get("recomendaciones_estrategicas"),
+        "assumptions": data.get("assumptions"),
+    }
     if existing:
         existing.analisis_mercado = data.get("analisis_mercado")
         existing.estrategia_precios = data.get("estrategia_precios")
         existing.estrategia_marketing = data.get("estrategia_marketing")
         existing.estrategia_ventas = data.get("estrategia_ventas")
+        for k, v in extras.items():
+            setattr(existing, k, v)
         db.commit()
         db.refresh(existing)
         return True
@@ -33,6 +58,7 @@ def sync_agent_estrategia_comercial(project_id: int, data: Optional[Dict[str, An
         estrategia_precios=data.get("estrategia_precios"),
         estrategia_marketing=data.get("estrategia_marketing"),
         estrategia_ventas=data.get("estrategia_ventas"),
+        **extras,
     )
     db.add(row)
     db.commit()
@@ -46,9 +72,19 @@ def sync_agent_roadmap(project_id: int, data: Optional[Dict[str, Any]], db: Sess
     existing = db.query(ProjectRoadmap).filter(ProjectRoadmap.project_id == project_id).first()
     fases = data.get("fases")
     cronograma = data.get("cronograma_total_meses")
+    milestones = data.get("milestones")
+    assumptions = data.get("assumptions")
+    project_start_date = _parse_date(data.get("project_start_date"))
+    project_end_date = _parse_date(data.get("project_end_date"))
+    gantt_json = data.get("gantt_json")
     if existing:
         existing.fases = fases
         existing.cronograma_total_meses = cronograma
+        existing.milestones = milestones
+        existing.assumptions = assumptions
+        existing.project_start_date = project_start_date
+        existing.project_end_date = project_end_date
+        existing.gantt_json = gantt_json
         db.commit()
         db.refresh(existing)
         return True
@@ -56,6 +92,11 @@ def sync_agent_roadmap(project_id: int, data: Optional[Dict[str, Any]], db: Sess
         project_id=project_id,
         cronograma_total_meses=cronograma,
         fases=fases,
+        milestones=milestones,
+        assumptions=assumptions,
+        project_start_date=project_start_date,
+        project_end_date=project_end_date,
+        gantt_json=gantt_json,
     )
     db.add(row)
     db.commit()
@@ -67,11 +108,21 @@ def sync_agent_analisis_financiero(project_id: int, data: Optional[Dict[str, Any
     if not data:
         return False
     existing = db.query(ProjectAnalisisFinanciero).filter(ProjectAnalisisFinanciero.project_id == project_id).first()
+    extras = {
+        "costo_operativo_mensual": data.get("costo_operativo_mensual"),
+        "modelo_ingresos": data.get("modelo_ingresos"),
+        "ingreso_mensual_esperado": data.get("ingreso_mensual_esperado"),
+        "margen_estimado": data.get("margen_estimado"),
+        "payback_meses": data.get("payback_meses"),
+        "observaciones": data.get("observaciones"),
+    }
     if existing:
         existing.inversion_inicial = data.get("inversion_inicial")
         existing.proyecciones_3_anos = data.get("proyecciones_3_anos")
         existing.metricas_clave = data.get("metricas_clave")
         existing.viabilidad_financiera = data.get("viabilidad_financiera")
+        for k, v in extras.items():
+            setattr(existing, k, v)
         db.commit()
         db.refresh(existing)
         return True
@@ -81,6 +132,7 @@ def sync_agent_analisis_financiero(project_id: int, data: Optional[Dict[str, Any
         proyecciones_3_anos=data.get("proyecciones_3_anos"),
         metricas_clave=data.get("metricas_clave"),
         viabilidad_financiera=data.get("viabilidad_financiera"),
+        **extras,
     )
     db.add(row)
     db.commit()
@@ -96,6 +148,7 @@ def sync_agent_analisis_riesgos(project_id: int, data: Optional[Dict[str, Any]],
     if existing:
         existing.nivel_riesgo_general = data.get("nivel_riesgo_general")
         existing.recomendaciones = data.get("recomendaciones")
+        existing.assumptions = data.get("assumptions")
         db.commit()
         db.refresh(existing)
     else:
@@ -103,21 +156,26 @@ def sync_agent_analisis_riesgos(project_id: int, data: Optional[Dict[str, Any]],
             project_id=project_id,
             nivel_riesgo_general=data.get("nivel_riesgo_general"),
             recomendaciones=data.get("recomendaciones"),
+            assumptions=data.get("assumptions"),
         )
         db.add(row)
         db.commit()
 
-    # Riesgos: borrar existentes e insertar los del agente
+    # Riesgos: borrar existentes e insertar los del agente (risk_code único por proyecto; si no viene, R1, R2...)
     db.query(ProjectRiesgo).filter(ProjectRiesgo.project_id == project_id).delete()
     riesgos: List[Dict[str, Any]] = data.get("riesgos_identificados") or []
     for i, r in enumerate(riesgos):
+        risk_code = r.get("risk_code") or f"R{i + 1}"
         pr = ProjectRiesgo(
             project_id=project_id,
+            risk_code=risk_code,
             categoria=r.get("categoria"),
             riesgo=r.get("riesgo"),
             probabilidad=r.get("probabilidad"),
             impacto=r.get("impacto"),
             mitigacion=r.get("mitigacion"),
+            owner=r.get("owner"),
+            source_request_id=r.get("source_request_id"),
             orden=i,
         )
         db.add(pr)
@@ -129,6 +187,12 @@ def sync_agent_veredicto(project_id: int, data: Optional[Dict[str, Any]], db: Se
     if not data:
         return False
     existing = db.query(ProjectVeredicto).filter(ProjectVeredicto.project_id == project_id).first()
+    extras = {
+        "confidence": data.get("confidence"),
+        "reasons": data.get("reasons"),
+        "conditions_to_proceed": data.get("conditions_to_proceed"),
+        "executive_summary": data.get("executive_summary"),
+    }
     if existing:
         existing.decision = data.get("decision")
         existing.puntuacion_general = data.get("puntuacion_general")
@@ -136,6 +200,8 @@ def sync_agent_veredicto(project_id: int, data: Optional[Dict[str, Any]], db: Se
         existing.debilidades = data.get("debilidades")
         existing.recomendacion_estrategica = data.get("recomendacion_estrategica")
         existing.siguiente_paso = data.get("siguiente_paso")
+        for k, v in extras.items():
+            setattr(existing, k, v)
         db.commit()
         db.refresh(existing)
         return True
@@ -147,6 +213,7 @@ def sync_agent_veredicto(project_id: int, data: Optional[Dict[str, Any]], db: Se
         debilidades=data.get("debilidades"),
         recomendacion_estrategica=data.get("recomendacion_estrategica"),
         siguiente_paso=data.get("siguiente_paso"),
+        **extras,
     )
     db.add(row)
     db.commit()
@@ -190,12 +257,23 @@ def get_merged_sections(db: Session, project_id: int) -> Dict[str, Any]:
             "estrategia_precios": ec.estrategia_precios,
             "estrategia_marketing": ec.estrategia_marketing,
             "estrategia_ventas": ec.estrategia_ventas,
+            "swot": ec.swot,
+            "objetivos_estrategicos": ec.objetivos_estrategicos,
+            "ventajas_competitivas": ec.ventajas_competitivas,
+            "factores_criticos_exito": ec.factores_criticos_exito,
+            "recomendaciones_estrategicas": ec.recomendaciones_estrategicas,
+            "assumptions": ec.assumptions,
         }
     rm = db.query(ProjectRoadmap).filter(ProjectRoadmap.project_id == project_id).first()
     if rm:
         out["roadmap_estrategico"] = {
             "fases": rm.fases,
             "cronograma_total_meses": rm.cronograma_total_meses,
+            "milestones": rm.milestones,
+            "assumptions": rm.assumptions,
+            "project_start_date": rm.project_start_date.isoformat() if rm.project_start_date else None,
+            "project_end_date": rm.project_end_date.isoformat() if rm.project_end_date else None,
+            "gantt_json": rm.gantt_json,
         }
     af = db.query(ProjectAnalisisFinanciero).filter(ProjectAnalisisFinanciero.project_id == project_id).first()
     if af:
@@ -204,6 +282,12 @@ def get_merged_sections(db: Session, project_id: int) -> Dict[str, Any]:
             "proyecciones_3_anos": af.proyecciones_3_anos,
             "metricas_clave": af.metricas_clave,
             "viabilidad_financiera": af.viabilidad_financiera,
+            "costo_operativo_mensual": float(af.costo_operativo_mensual) if af.costo_operativo_mensual is not None else None,
+            "modelo_ingresos": af.modelo_ingresos,
+            "ingreso_mensual_esperado": float(af.ingreso_mensual_esperado) if af.ingreso_mensual_esperado is not None else None,
+            "margen_estimado": float(af.margen_estimado) if af.margen_estimado is not None else None,
+            "payback_meses": af.payback_meses,
+            "observaciones": af.observaciones,
         }
     ar = db.query(ProjectAnalisisRiesgos).filter(ProjectAnalisisRiesgos.project_id == project_id).first()
     riesgos = db.query(ProjectRiesgo).filter(ProjectRiesgo.project_id == project_id).order_by(ProjectRiesgo.orden).all()
@@ -211,8 +295,18 @@ def get_merged_sections(db: Session, project_id: int) -> Dict[str, Any]:
         out["analisis_riesgos"] = {
             "nivel_riesgo_general": ar.nivel_riesgo_general if ar else None,
             "recomendaciones": ar.recomendaciones if ar else None,
+            "assumptions": ar.assumptions if ar else None,
             "riesgos_identificados": [
-                {"categoria": r.categoria, "riesgo": r.riesgo, "probabilidad": r.probabilidad, "impacto": r.impacto, "mitigacion": r.mitigacion}
+                {
+                    "risk_code": r.risk_code,
+                    "categoria": r.categoria,
+                    "riesgo": r.riesgo,
+                    "probabilidad": r.probabilidad,
+                    "impacto": r.impacto,
+                    "mitigacion": r.mitigacion,
+                    "owner": r.owner,
+                    "source_request_id": r.source_request_id,
+                }
                 for r in riesgos
             ],
         }
@@ -220,10 +314,14 @@ def get_merged_sections(db: Session, project_id: int) -> Dict[str, Any]:
     if v:
         out["veredicto_final"] = {
             "decision": v.decision,
+            "confidence": float(v.confidence) if v.confidence is not None else None,
             "puntuacion_general": float(v.puntuacion_general) if v.puntuacion_general is not None else None,
             "fortalezas": v.fortalezas,
             "debilidades": v.debilidades,
             "recomendacion_estrategica": v.recomendacion_estrategica,
             "siguiente_paso": v.siguiente_paso,
+            "reasons": v.reasons,
+            "conditions_to_proceed": v.conditions_to_proceed,
+            "executive_summary": v.executive_summary,
         }
     return out
