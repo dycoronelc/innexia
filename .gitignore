@@ -5,9 +5,10 @@
 backend/.env
 backend/.env.*
 
-# Logs
+# Logs and local error dumps (no subir a GitHub)
 logs
 *.log
+errores-backend.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
