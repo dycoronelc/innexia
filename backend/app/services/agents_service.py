@@ -4,7 +4,7 @@ Servicio de Agentes OpenAI para detección de intenciones y generación de conte
 import json
 import logging
 from typing import Dict, Any, List, Optional
-from agents import Agent, Runner, SQLiteSession, AgentOutputSchema
+from agents import Agent, Runner, SQLiteSession
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
