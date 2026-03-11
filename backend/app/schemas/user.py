@@ -9,7 +9,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     full_name: str = Field(..., min_length=2, max_length=100)
     role: str = Field(default="user", pattern="^(admin|user|super_admin)$")
-    company_id: int = Field(..., min_length=1, description="ID de la empresa a la que pertenece el usuario")
+    company_id: int = Field(..., ge=1, description="ID de la empresa a la que pertenece el usuario")
     password: str = Field(..., min_length=8, max_length=100)
     confirm_password: str = Field(..., min_length=8, max_length=100)
 
@@ -18,7 +18,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = Field(None, min_length=2, max_length=100)
     role: Optional[str] = Field(None, pattern="^(admin|user|super_admin)$")
-    company_id: Optional[int] = Field(None, description="ID de la empresa a la que pertenece el usuario")
+    company_id: Optional[int] = Field(None, ge=1, description="ID de la empresa a la que pertenece el usuario")
     active: Optional[bool] = None
 
 # UserInDB eliminado ya que no es necesario

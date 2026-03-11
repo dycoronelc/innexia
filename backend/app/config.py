@@ -29,14 +29,15 @@ class Settings:
     MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", "10485760"))
     ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".docx", ".doc", ".xlsx", ".xls", ".txt"]
 
-    # Configuración de CORS
-    CORS_ORIGINS = [
-        "http://localhost:3000", 
-        "http://localhost:3001", 
-        "http://localhost:5173", 
-        "http://127.0.0.1:3000", 
-        "http://127.0.0.1:3001", 
-        "http://127.0.0.1:5173"
+    # Configuración de CORS (en producción definir CORS_ORIGINS como URLs separadas por coma)
+    _cors_env = os.getenv("CORS_ORIGINS", "").strip()
+    CORS_ORIGINS = [x.strip() for x in _cors_env.split(",") if x.strip()] if _cors_env else [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:5173",
     ]
 
     # Configuración de la aplicación
