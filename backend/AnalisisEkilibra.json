@@ -1,0 +1,329 @@
+{
+  "business_model_canvas": {
+    "propuesta_valor": "Ekilibra ofrece una experiencia integral y equilibrada para mujeres mayores de 40 años en Panamá, enfocándose en una vida saludable sin restricciones extremas. Su propuesta se basa en contenido variado y personalizado que incluye videos, artículos, retos, seguimiento de hábitos, integración con redes sociales, preparación de platos saludables y rutinas cortas de ejercicios, todo apoyado por interacción directa con coaches y soporte de inteligencia artificial para maximizar el bienestar de sus usuarias.",
+    "segmentos_clientes": [
+      "Mujeres mayores de 40 años",
+      "Nivel socioeconómico medio alto",
+      "Residentes en la ciudad de Panamá",
+      "Interesadas en salud integral y bienestar sin restricciones extremas"
+    ],
+    "canales": [
+      "Redes sociales",
+      "Publicidad digital",
+      "Alianzas con gimnasios y centros de bienestar",
+      "Eventos presenciales y online"
+    ],
+    "relaciones_clientes": [
+      "Interacción directa con coaches",
+      "Apoyo personalizado mediante inteligencia artificial",
+      "Grupos de apoyo comunitarios",
+      "Contenido exclusivo para suscriptores premium",
+      "Notificaciones personalizadas según plan escogido"
+    ],
+    "fuentes_ingresos": [
+      "Planes gratuitos con funcionalidades básicas",
+      "Planes premium con suscripción mensual",
+      "Venta de contenido exclusivo y retos especiales",
+      "Alianzas comerciales con gimnasios y marcas de bienestar"
+    ],
+    "recursos_clave": [
+      "Equipo de desarrollo tecnológico",
+      "Coaches especializados",
+      "Equipo de creación de contenido multimedia",
+      "Plataforma tecnológica para integración con redes sociales",
+      "Alianzas estratégicas",
+      "Equipo de marketing digital"
+    ],
+    "actividades_clave": [
+      "Desarrollo y mantenimiento de la app y plataforma AI",
+      "Creación y actualización de contenido",
+      "Gestión de relaciones con clientes y coaches",
+      "Marketing digital",
+      "Organización de eventos y retos",
+      "Monitoreo y análisis de datos"
+    ],
+    "socios_clave": [
+      "Gimnasios y centros de bienestar",
+      "Plataformas de redes sociales",
+      "Proveedores de tecnología para AI",
+      "Expertos en nutrición y fitness",
+      "Agencias de marketing digital"
+    ],
+    "estructura_costos": [
+      "Desarrollo y mantenimiento tecnológico",
+      "Producción de contenido",
+      "Salarios de coaches",
+      "Costos de marketing",
+      "Gastos operativos",
+      "Costos administrativos"
+    ]
+  },
+  "estrategia_comercial": {
+    "posicionamiento": "Posicionamiento como app integral de bienestar para mujeres mayores de 40 años en Panamá",
+    "kpis": [
+      "Usuarios",
+      "Conversión",
+      "Interacción",
+      "Retención",
+      "Satisfacción",
+      "Ingresos",
+      "Alianzas"
+    ]
+  },
+  "roadmap_estrategico": {
+    "fases": [
+      {
+        "nombre": "Pre-lanzamiento",
+        "descripcion": "Preparación y desarrollo inicial del producto y estrategia de mercado",
+        "duracion_estimada": "3-4 meses"
+      },
+      {
+        "nombre": "Lanzamiento",
+        "descripcion": "Introducción al mercado y primeras campañas de marketing",
+        "duracion_estimada": "1-2 meses"
+      },
+      {
+        "nombre": "Crecimiento",
+        "descripcion": "Expansión de usuarios, optimización y nuevas funcionalidades",
+        "duracion_estimada": "6-12 meses"
+      }
+    ],
+    "hitos": [
+      "Desarrollo de la app y plataforma AI completado",
+      "Lanzamiento oficial de Ekilibra",
+      "Alcanzar el punto de equilibrio financiero",
+      "Expansión de la base de usuarios",
+      "Implementación de nuevas funcionalidades y campañas de fidelización"
+    ],
+    "actividades": [
+      {
+        "nombre": "Investigación de mercado",
+        "fase": "Pre-lanzamiento",
+        "duracion": "1 mes",
+        "dependencias": []
+      },
+      {
+        "nombre": "Diseño UX",
+        "fase": "Pre-lanzamiento",
+        "duracion": "1 mes",
+        "dependencias": ["Investigación de mercado"]
+      },
+      {
+        "nombre": "Desarrollo de contenido",
+        "fase": "Pre-lanzamiento",
+        "duracion": "2 meses",
+        "dependencias": ["Investigación de mercado"]
+      },
+      {
+        "nombre": "Desarrollo y pruebas de app",
+        "fase": "Pre-lanzamiento",
+        "duracion": "3 meses",
+        "dependencias": ["Diseño UX"]
+      },
+      {
+        "nombre": "Campañas de marketing",
+        "fase": "Lanzamiento",
+        "duracion": "2 meses",
+        "dependencias": ["Desarrollo y pruebas de app"]
+      },
+      {
+        "nombre": "Lanzamiento",
+        "fase": "Lanzamiento",
+        "duracion": "1 mes",
+        "dependencias": ["Campañas de marketing"]
+      },
+      {
+        "nombre": "Monitoreo y análisis de datos",
+        "fase": "Crecimiento",
+        "duracion": "6 meses",
+        "dependencias": ["Lanzamiento"]
+      },
+      {
+        "nombre": "Desarrollo de nuevas funcionalidades",
+        "fase": "Crecimiento",
+        "duracion": "6 meses",
+        "dependencias": ["Monitoreo y análisis de datos"]
+      },
+      {
+        "nombre": "Campañas de fidelización",
+        "fase": "Crecimiento",
+        "duracion": "6 meses",
+        "dependencias": ["Desarrollo de nuevas funcionalidades"]
+      }
+    ]
+  },
+  "analisis_financiero": {
+    "viabilidad_financiera": "Alta viabilidad financiera con ROI atractivo, punto de equilibrio en primer año, recomendación de control de costos y optimización CAC."
+  },
+  "analisis_riesgos": {
+    "riesgos": [
+      {
+        "tipo": "Mercado",
+        "descripcion": "Competencia consolidada y cambios en preferencias del consumidor",
+        "probabilidad": "Media",
+        "impacto": "Alto",
+        "estrategia_mitigacion": "Diferenciación y mejora continua del producto"
+      },
+      {
+        "tipo": "Operacional",
+        "descripcion": "Dependencia tecnológica y necesidad constante de contenido",
+        "probabilidad": "Alta",
+        "impacto": "Medio",
+        "estrategia_mitigacion": "Inversión en tecnología y equipo de contenido"
+      },
+      {
+        "tipo": "Financiero",
+        "descripcion": "Control de costos y optimización del CAC",
+        "probabilidad": "Media",
+        "impacto": "Medio",
+        "estrategia_mitigacion": "Monitoreo financiero riguroso"
+      },
+      {
+        "tipo": "Legal",
+        "descripcion": "Cambios regulatorios que afecten la operación",
+        "probabilidad": "Baja",
+        "impacto": "Alto",
+        "estrategia_mitigacion": "Asesoría legal continua"
+      },
+      {
+        "tipo": "Tecnológico",
+        "descripcion": "Riesgos tecnológicos y seguridad de datos",
+        "probabilidad": "Media",
+        "impacto": "Alto",
+        "estrategia_mitigacion": "Implementación de medidas de seguridad y actualización constante"
+      }
+    ],
+    "plan_contingencia": "Plan de contingencia basado en diversificación de proveedores tecnológicos, respaldo de datos y protocolos de respuesta rápida ante incidentes."
+  },
+  "veredicto_final": {
+    "veredicto": "POSITIVO",
+    "puntuacion_viabilidad": 85,
+    "fortalezas": [
+      "Propuesta integral y personalizada",
+      "Segmento de mercado definido",
+      "Alianzas estratégicas",
+      "Modelo de ingresos diversificado",
+      "Roadmap claro",
+      "Alta viabilidad financiera",
+      "Análisis de riesgos exhaustivo"
+    ],
+    "debilidades": [
+      "Dependencia tecnológica",
+      "Necesidad de contenido constante",
+      "Competencia creciente"
+    ],
+    "oportunidades": [
+      "Creciente interés en salud integral",
+      "Expansión geográfica",
+      "Alianzas comerciales",
+      "Uso de datos para personalización"
+    ],
+    "amenazas": [
+      "Competencia consolidada",
+      "Cambios regulatorios",
+      "Riesgos tecnológicos"
+    ],
+    "recomendaciones": [
+      "Invertir en IA",
+      "Fortalecer contenido",
+      "Diversificar canales",
+      "Implementar seguridad",
+      "Monitorear KPIs"
+    ],
+    "resumen_ejecutivo": "Ekilibra presenta un modelo de negocio sólido y viable enfocado en mujeres mayores de 40 años en Panamá, con una propuesta integral de bienestar apoyada en tecnología avanzada y alianzas estratégicas. El análisis financiero y de riesgos confirma su potencial de éxito, recomendando inversiones en IA y fortalecimiento de contenido para mantener competitividad."
+  },
+  "plan_actividades": {
+    "actividades": [
+      {
+        "id": "1",
+        "nombre": "Investigación de mercado",
+        "descripcion": "Análisis del mercado objetivo y necesidades de las usuarias",
+        "duracion_dias": 30,
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "dependencias": [],
+        "entregables": ["Informe de investigación de mercado"]
+      },
+      {
+        "id": "2",
+        "nombre": "Diseño UX",
+        "descripcion": "Diseño de la experiencia de usuario para la app",
+        "duracion_dias": 30,
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "dependencias": ["1"],
+        "entregables": ["Prototipo UX"]
+      },
+      {
+        "id": "3",
+        "nombre": "Desarrollo de contenido",
+        "descripcion": "Creación y actualización de contenido multimedia para la plataforma",
+        "duracion_dias": 60,
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "dependencias": ["1"],
+        "entregables": ["Biblioteca de contenido"]
+      },
+      {
+        "id": "4",
+        "nombre": "Desarrollo y pruebas de app",
+        "descripcion": "Programación, integración y pruebas de la aplicación móvil y plataforma AI",
+        "duracion_dias": 90,
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "dependencias": ["2"],
+        "entregables": ["App funcional y plataforma AI operativa"]
+      },
+      {
+        "id": "5",
+        "nombre": "Campañas de marketing",
+        "descripcion": "Estrategias de marketing digital y publicidad para el lanzamiento",
+        "duracion_dias": 60,
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "dependencias": ["4"],
+        "entregables": ["Plan de marketing y campañas activas"]
+      },
+      {
+        "id": "6",
+        "nombre": "Lanzamiento",
+        "descripcion": "Evento y actividades para la introducción oficial al mercado",
+        "duracion_dias": 30,
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "dependencias": ["5"],
+        "entregables": ["Evento de lanzamiento"]
+      },
+      {
+        "id": "7",
+        "nombre": "Monitoreo y análisis de datos",
+        "descripcion": "Seguimiento de métricas y comportamiento de usuarias para optimización",
+        "duracion_dias": 180,
+        "prioridad": "Media",
+        "estado": "Pendiente",
+        "dependencias": ["6"],
+        "entregables": ["Reportes de análisis de datos"]
+      },
+      {
+        "id": "8",
+        "nombre": "Desarrollo de nuevas funcionalidades",
+        "descripcion": "Implementación de mejoras y nuevas características en la app",
+        "duracion_dias": 180,
+        "prioridad": "Media",
+        "estado": "Pendiente",
+        "dependencias": ["7"],
+        "entregables": ["Actualizaciones de la app"]
+      },
+      {
+        "id": "9",
+        "nombre": "Campañas de fidelización",
+        "descripcion": "Estrategias para mantener y aumentar la base de usuarias",
+        "duracion_dias": 180,
+        "prioridad": "Media",
+        "estado": "Pendiente",
+        "dependencias": ["8"],
+        "entregables": ["Programas de fidelización"]
+      }
+    ]
+  }
+}

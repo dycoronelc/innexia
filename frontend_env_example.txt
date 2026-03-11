@@ -1,0 +1,22 @@
+# Configuración del Backend
+VITE_API_BASE_URL=http://localhost:8000
+VITE_API_TIMEOUT=10000
+
+# Configuración de la Aplicación
+VITE_APP_NAME=Innexia
+VITE_APP_VERSION=1.0.0
+VITE_APP_DESCRIPTION=Business Model Canvas
+
+# Configuración PWA
+VITE_PWA_ENABLED=true
+VITE_PWA_NAME=Innexia BMC
+VITE_PWA_SHORT_NAME=Innexia
+
+# Configuración de Autenticación
+VITE_JWT_STORAGE_KEY=innexia_token
+VITE_REFRESH_TOKEN_KEY=innexia_refresh_token
+VITE_USER_STORAGE_KEY=innexia_user
+
+# Configuración de Colores (por defecto)
+VITE_PRIMARY_COLOR=#4D2581
+VITE_SECONDARY_COLOR=#ED682B

@@ -1,0 +1,200 @@
+/* Form Improvements - Mejoras generales para formularios */
+
+/* Estilo mejorado para todos los campos de formulario */
+.MuiTextField-root,
+.MuiFormControl-root {
+  margin-bottom: 8px;
+}
+
+/* Mejora el espaciado entre elementos del formulario */
+.MuiDialogContent-root .MuiGrid-container {
+  padding: 8px 0;
+}
+
+/* Estilo mejorado para los selects múltiples */
+.MuiSelect-multiple .MuiOutlinedInput-input {
+  min-height: 24px;
+  padding: 8px 12px;
+}
+
+/* Mejora la visualización de los chips en selects múltiples */
+.MuiSelect-multiple .MuiChip-root {
+  margin: 2px;
+  height: 24px;
+  font-size: 0.75rem;
+}
+
+/* Estilo para el placeholder de selects múltiples vacíos */
+.MuiSelect-multiple .MuiTypography-root {
+  color: #666;
+  font-style: italic;
+  padding: 4px 0;
+}
+
+/* Mejora el espaciado de los botones de acción */
+.MuiDialogActions-root {
+  padding: 16px 24px;
+  gap: 12px;
+}
+
+/* Estilo mejorado para campos de color */
+.MuiTextField-root input[type="color"] {
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+/* Responsive improvements */
+@media (max-width: 600px) {
+  .MuiDialog-root {
+    margin: 16px;
+  }
+  
+  .MuiDialogContent-root {
+    padding: 16px;
+  }
+  
+  .MuiDialogActions-root {
+    padding: 12px 16px;
+    flex-direction: column;
+  }
+  
+  .MuiDialogActions-root .MuiButton-root {
+    width: 100%;
+    margin: 4px 0;
+  }
+}
+
+/* Mejora la legibilidad de los labels */
+.MuiInputLabel-root {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Estilo para campos requeridos */
+.MuiInputLabel-root.Mui-required::after {
+  content: " *";
+  color: #d32f2f;
+}
+
+/* Mejora el hover de los campos */
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #1976d2;
+  border-width: 2px;
+}
+
+/* Estilo para campos deshabilitados */
+.MuiOutlinedInput-root.Mui-disabled {
+  background-color: #f5f5f5;
+  opacity: 0.7;
+}
+
+/* Mejora el focus de los campos */
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #1976d2;
+  border-width: 2px;
+}
+
+/* Estilo para campos de error */
+.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: #d32f2f;
+  border-width: 2px;
+}
+
+/* Mejora el espaciado de los switches */
+.MuiFormControlLabel-root {
+  margin: 8px 0;
+  padding: 8px 0;
+}
+
+/* Estilo para los tooltips de ayuda */
+.MuiTooltip-tooltip {
+  font-size: 0.875rem;
+  background-color: #333;
+  color: white;
+}
+
+/* Mejora la presentación de los selects */
+.MuiSelect-select {
+  padding: 12px 16px;
+}
+
+/* Estilo para los menús de opciones */
+.MuiMenu-paper {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Mejora la presentación de los chips */
+.MuiChip-root {
+  border-radius: 16px;
+  font-weight: 500;
+}
+
+/* Estilo para campos de texto multilinea */
+.MuiTextField-root textarea {
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+/* Mejora el espaciado de los grids */
+.MuiGrid-item {
+  padding: 8px;
+}
+
+/* Estilo para campos de fecha y hora */
+.MuiTextField-root input[type="date"],
+.MuiTextField-root input[type="time"],
+.MuiTextField-root input[type="datetime-local"] {
+  padding: 12px 16px;
+}
+
+/* Mejora la presentación de los campos de número */
+.MuiTextField-root input[type="number"] {
+  text-align: right;
+}
+
+/* Estilo para campos de búsqueda */
+.MuiTextField-root input[type="search"] {
+  padding-left: 40px;
+}
+
+/* Mejora la presentación de los campos de teléfono */
+.MuiTextField-root input[type="tel"] {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+/* Estilo para campos de URL */
+.MuiTextField-root input[type="url"] {
+  font-family: monospace;
+}
+
+/* Mejora la presentación de los campos de archivo */
+.MuiTextField-root input[type="file"] {
+  padding: 8px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Estilo para campos de rango */
+.MuiTextField-root input[type="range"] {
+  padding: 8px 0;
+}
+
+/* Mejora la presentación de los campos de contraseña */
+.MuiTextField-root input[type="password"] {
+  letter-spacing: 2px;
+}
+
+/* Estilo para campos de email */
+.MuiTextField-root input[type="email"] {
+  font-family: inherit;
+}
+
+/* Mejora la presentación de los campos de texto */
+.MuiTextField-root input[type="text"] {
+  font-family: inherit;
+}
+

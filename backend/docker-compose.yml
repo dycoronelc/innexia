@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: innovai_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: innovai_db
+      MYSQL_USER: bmc
+      MYSQL_PASSWORD: Innexia
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - innovai_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis (opcional, para caché y sesiones)
+  redis:
+    image: redis:7-alpine
+    container_name: innovai_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - innovai_network
+
+  # Backend FastAPI
+  backend:
+    build: .
+    container_name: innovai_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_USER=bmc
+      - DATABASE_PASSWORD=Innexia
+      - DATABASE_NAME=innovai_db
+      - SECRET_KEY=your-super-secret-key-change-in-production
+      - DEBUG=false
+    volumes:
+      - ./uploads:/app/uploads
+      - ./app:/app/app
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - innovai_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  innovai_network:
+    driver: bridge

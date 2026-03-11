@@ -1,0 +1,8 @@
+/* Theme Overrides - Minimal */
+.MuiAppBar-root {
+  z-index: 1200 !important;
+}
+
+.MuiDrawer-paper {
+  z-index: 1100 !important;
+}

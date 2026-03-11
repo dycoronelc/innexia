@@ -1,0 +1,60 @@
+{
+  "name": "Innexia - Business Model Canvas",
+  "short_name": "Innexia",
+  "description": "Aplicación para crear y gestionar Business Model Canvas de manera intuitiva",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4D2581",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["business", "productivity", "education"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuevo Canvas",
+      "short_name": "Nuevo",
+      "description": "Crear un nuevo Business Model Canvas",
+      "url": "/projects/new",
+      "icons": [
+        {
+          "src": "/vite.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Mis Proyectos",
+      "short_name": "Proyectos",
+      "description": "Ver todos mis proyectos",
+      "url": "/projects",
+      "icons": [
+        {
+          "src": "/vite.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
+

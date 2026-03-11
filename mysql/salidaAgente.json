@@ -1,0 +1,338 @@
+{
+  "metadata": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "workflow_version": "1.0",
+    "modelo_usado": "gpt-4.1-mini"
+  },
+  "conversacion": {
+    "mensajes_totales": 15,
+    "idea_negocio_original": "Plataforma SaaS para gestión de inventarios en pequeñas tiendas",
+    "historial_completo": [
+      {
+        "rol": "usuario",
+        "mensaje": "Quiero crear una plataforma SaaS...",
+        "timestamp": "2024-01-15T10:15:00Z"
+      }
+    ]
+  },
+  "business_model_canvas": {
+    "segmentos_clientes": {
+      "descripcion": "Pequeñas y medianas tiendas minoristas",
+      "detalles": ["Tiendas de barrio", "Minimarkets", "Farmacias independientes"],
+      "tamano_mercado_estimado": "50,000 tiendas en la región"
+    },
+    "propuesta_valor": {
+      "descripcion": "Sistema de inventario simple y económico",
+      "beneficios_clave": ["Fácil de usar", "Precio accesible", "Sin instalación"]
+    },
+    "canales": {
+      "distribucion": ["Venta directa online", "Marketing digital", "Referidos"],
+      "comunicacion": ["Email", "WhatsApp", "Webinars"]
+    },
+    "relacion_clientes": {
+      "tipo": "Autoservicio asistido",
+      "estrategias": ["Onboarding automatizado", "Soporte por chat", "Base de conocimientos"]
+    },
+    "fuentes_ingresos": {
+      "modelo": "Suscripción mensual",
+      "precios": [
+        {"plan": "Básico", "precio": 29, "moneda": "USD"},
+        {"plan": "Pro", "precio": 59, "moneda": "USD"},
+        {"plan": "Enterprise", "precio": 99, "moneda": "USD"}
+      ]
+    },
+    "recursos_clave": {
+      "tecnologicos": ["Plataforma cloud", "Base de datos", "API"],
+      "humanos": ["Desarrolladores", "Soporte técnico", "Marketing"],
+      "financieros": ["Capital inicial $50,000"]
+    },
+    "actividades_clave": [
+      "Desarrollo de software",
+      "Marketing y ventas",
+      "Soporte al cliente",
+      "Mantenimiento de plataforma"
+    ],
+    "alianzas_clave": [
+      "Proveedores de hosting cloud",
+      "Pasarelas de pago",
+      "Partners de distribución"
+    ],
+    "estructura_costos": {
+      "costos_fijos": [
+        {"concepto": "Hosting y servidores", "monto": 500, "frecuencia": "mensual"},
+        {"concepto": "Salarios equipo", "monto": 8000, "frecuencia": "mensual"}
+      ],
+      "costos_variables": [
+        {"concepto": "Marketing digital", "monto": 2000, "frecuencia": "mensual"}
+      ]
+    }
+  },
+  "estrategia_comercial": {
+    "analisis_mercado": {
+      "tamano_mercado": "$500M anuales",
+      "crecimiento_anual": "15%",
+      "competidores_principales": ["Competidor A", "Competidor B"],
+      "ventaja_competitiva": "Precio 40% menor y mayor simplicidad"
+    },
+    "estrategia_precios": {
+      "modelo": "Freemium con planes escalonados",
+      "justificacion": "Permite adquisición rápida y upselling",
+      "descuentos": ["10% anual", "20% para más de 5 licencias"]
+    },
+    "estrategia_marketing": {
+      "canales_principales": ["Google Ads", "Facebook Ads", "Content Marketing"],
+      "presupuesto_mensual": 2000,
+      "kpis": ["CAC < $100", "LTV > $500", "Tasa conversión > 3%"]
+    },
+    "estrategia_ventas": {
+      "proceso": "Self-service con asistencia opcional",
+      "ciclo_venta_estimado": "7 días",
+      "tasa_conversion_objetivo": "3%"
+    }
+  },
+  "roadmap_estrategico": {
+    "fases": [
+      {
+        "fase": "MVP",
+        "duracion_meses": 3,
+        "hitos": [
+          "Desarrollo funcionalidades core",
+          "Testing con 10 clientes beta",
+          "Lanzamiento versión 1.0"
+        ],
+        "recursos_necesarios": ["2 desarrolladores", "$15,000"]
+      },
+      {
+        "fase": "Crecimiento",
+        "duracion_meses": 6,
+        "hitos": [
+          "Alcanzar 100 clientes",
+          "Implementar integraciones",
+          "Expandir equipo de soporte"
+        ],
+        "recursos_necesarios": ["4 personas", "$50,000"]
+      },
+      {
+        "fase": "Escalamiento",
+        "duracion_meses": 12,
+        "hitos": [
+          "1000 clientes activos",
+          "Expansión internacional",
+          "Ronda de inversión Serie A"
+        ],
+        "recursos_necesarios": ["10 personas", "$200,000"]
+      }
+    ],
+    "cronograma_total_meses": 21
+  },
+  "analisis_financiero": {
+    "inversion_inicial": {
+      "total": 50000,
+      "desglose": [
+        {"concepto": "Desarrollo", "monto": 30000},
+        {"concepto": "Marketing", "monto": 15000},
+        {"concepto": "Legal y administrativo", "monto": 5000}
+      ]
+    },
+    "proyecciones_3_anos": [
+      {
+        "ano": 1,
+        "ingresos": 120000,
+        "costos": 150000,
+        "utilidad_neta": -30000,
+        "clientes_estimados": 200
+      },
+      {
+        "ano": 2,
+        "ingresos": 480000,
+        "costos": 300000,
+        "utilidad_neta": 180000,
+        "clientes_estimados": 800
+      },
+      {
+        "ano": 3,
+        "ingresos": 1200000,
+        "costos": 600000,
+        "utilidad_neta": 600000,
+        "clientes_estimados": 2000
+      }
+    ],
+    "metricas_clave": {
+      "roi_3_anos": "1100%",
+      "punto_equilibrio_meses": 18,
+      "ltv_cac_ratio": 5,
+      "margen_bruto": "70%"
+    },
+    "viabilidad_financiera": "ALTA"
+  },
+  "analisis_riesgos": {
+    "riesgos_identificados": [
+      {
+        "categoria": "Mercado",
+        "riesgo": "Competencia de grandes players",
+        "probabilidad": "MEDIA",
+        "impacto": "ALTO",
+        "mitigacion": "Enfoque en nicho específico y servicio personalizado"
+      },
+      {
+        "categoria": "Tecnológico",
+        "riesgo": "Problemas de escalabilidad",
+        "probabilidad": "MEDIA",
+        "impacto": "MEDIO",
+        "mitigacion": "Arquitectura cloud escalable desde el inicio"
+      },
+      {
+        "categoria": "Financiero",
+        "riesgo": "Burn rate alto en fase inicial",
+        "probabilidad": "ALTA",
+        "impacto": "ALTO",
+        "mitigacion": "Control estricto de gastos y búsqueda de inversión temprana"
+      },
+      {
+        "categoria": "Operacional",
+        "riesgo": "Dificultad para retener talento",
+        "probabilidad": "MEDIA",
+        "impacto": "MEDIO",
+        "mitigacion": "Equity para equipo fundador y cultura empresarial sólida"
+      }
+    ],
+    "nivel_riesgo_general": "MEDIO",
+    "recomendaciones": [
+      "Validar PMF antes de escalar marketing",
+      "Mantener runway de al menos 12 meses",
+      "Diversificar canales de adquisición"
+    ]
+  },
+  "veredicto_final": {
+    "decision": "POSITIVO",
+    "puntuacion_general": 8.5,
+    "fortalezas": [
+      "Mercado grande y en crecimiento",
+      "Propuesta de valor clara y diferenciada",
+      "Modelo de negocio escalable",
+      "Proyecciones financieras sólidas"
+    ],
+    "debilidades": [
+      "Competencia establecida",
+      "Requiere inversión inicial significativa",
+      "Dependencia de adquisición digital"
+    ],
+    "recomendacion_estrategica": "Proceder con el proyecto. Enfocarse en validación rápida del MVP con clientes beta antes de invertir en marketing masivo. Buscar inversión ángel para extender runway.",
+    "siguiente_paso": "Desarrollar MVP en 3 meses y conseguir 10 clientes beta"
+  },
+  "plan_actividades": {
+    "generado": true,
+    "actividades": [
+      {
+        "id": "ACT-001",
+        "titulo": "Definición de arquitectura técnica",
+        "descripcion": "Diseñar arquitectura cloud escalable y stack tecnológico",
+        "fecha_inicio": "2024-01-15",
+        "fecha_fin": "2024-01-29",
+        "duracion_dias": 14,
+        "responsable": "CTO",
+        "prioridad": "ALTA",
+        "estado": "PENDIENTE",
+        "dependencias": [],
+        "etiquetas": ["desarrollo", "mvp", "fase-1"]
+      },
+      {
+        "id": "ACT-002",
+        "titulo": "Desarrollo funcionalidades core MVP",
+        "descripcion": "Implementar gestión de inventario básica, alertas y reportes",
+        "fecha_inicio": "2024-01-30",
+        "fecha_fin": "2024-03-15",
+        "duracion_dias": 45,
+        "responsable": "Equipo Desarrollo",
+        "prioridad": "ALTA",
+        "estado": "PENDIENTE",
+        "dependencias": ["ACT-001"],
+        "etiquetas": ["desarrollo", "mvp", "fase-1"]
+      },
+      {
+        "id": "ACT-003",
+        "titulo": "Reclutamiento clientes beta",
+        "descripcion": "Identificar y contactar 10 tiendas para programa beta",
+        "fecha_inicio": "2024-02-15",
+        "fecha_fin": "2024-03-01",
+        "duracion_dias": 15,
+        "responsable": "CEO",
+        "prioridad": "ALTA",
+        "estado": "PENDIENTE",
+        "dependencias": [],
+        "etiquetas": ["ventas", "mvp", "fase-1"]
+      },
+      {
+        "id": "ACT-004",
+        "titulo": "Testing con clientes beta",
+        "descripcion": "Implementación y recolección de feedback de 10 clientes",
+        "fecha_inicio": "2024-03-16",
+        "fecha_fin": "2024-04-15",
+        "duracion_dias": 30,
+        "responsable": "Product Manager",
+        "prioridad": "ALTA",
+        "estado": "PENDIENTE",
+        "dependencias": ["ACT-002", "ACT-003"],
+        "etiquetas": ["producto", "mvp", "fase-1"]
+      },
+      {
+        "id": "ACT-005",
+        "titulo": "Lanzamiento versión 1.0",
+        "descripcion": "Deploy a producción y apertura de registro público",
+        "fecha_inicio": "2024-04-16",
+        "fecha_fin": "2024-04-30",
+        "duracion_dias": 14,
+        "responsable": "CTO",
+        "prioridad": "ALTA",
+        "estado": "PENDIENTE",
+        "dependencias": ["ACT-004"],
+        "etiquetas": ["desarrollo", "lanzamiento", "fase-1"]
+      },
+      {
+        "id": "ACT-006",
+        "titulo": "Campaña marketing digital inicial",
+        "descripcion": "Lanzar campañas en Google Ads y Facebook Ads",
+        "fecha_inicio": "2024-05-01",
+        "fecha_fin": "2024-07-31",
+        "duracion_dias": 90,
+        "responsable": "Marketing Manager",
+        "prioridad": "MEDIA",
+        "estado": "PENDIENTE",
+        "dependencias": ["ACT-005"],
+        "etiquetas": ["marketing", "crecimiento", "fase-2"]
+      },
+      {
+        "id": "ACT-007",
+        "titulo": "Desarrollo integraciones",
+        "descripcion": "Integrar con sistemas contables y pasarelas de pago",
+        "fecha_inicio": "2024-06-01",
+        "fecha_fin": "2024-08-31",
+        "duracion_dias": 90,
+        "responsable": "Equipo Desarrollo",
+        "prioridad": "MEDIA",
+        "estado": "PENDIENTE",
+        "dependencias": ["ACT-005"],
+        "etiquetas": ["desarrollo", "integraciones", "fase-2"]
+      },
+      {
+        "id": "ACT-008",
+        "titulo": "Preparación ronda inversión",
+        "descripcion": "Pitch deck, proyecciones y acercamiento a inversores",
+        "fecha_inicio": "2024-09-01",
+        "fecha_fin": "2024-12-31",
+        "duracion_dias": 120,
+        "responsable": "CEO",
+        "prioridad": "ALTA",
+        "estado": "PENDIENTE",
+        "dependencias": ["ACT-006"],
+        "etiquetas": ["financiero", "inversion", "fase-3"]
+      }
+    ],
+    "resumen": {
+      "total_actividades": 8,
+      "duracion_total_dias": 350,
+      "fecha_inicio_proyecto": "2024-01-15",
+      "fecha_fin_estimada": "2024-12-31"
+    }
+  }
+}

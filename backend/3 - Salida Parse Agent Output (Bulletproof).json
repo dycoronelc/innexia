@@ -1,0 +1,31 @@
+[
+  {
+    "output": {
+      "status": "COLLECTING",
+      "reply_to_customer": "¡Gracias! 👍 Foto recibida. Ahora por favor dime tu nombre completo para continuar con el registro de tu servicio.",
+      "short_description": "",
+      "estructura_ticket": {
+        "nombre_cliente": "",
+        "direccion": "",
+        "tipo_servicio": "",
+        "descripcion_problema": "",
+        "fecha_preferida": "",
+        "hora_preferida": "",
+        "telefono": "",
+        "correo": "",
+        "fotos_equipo": "SÍ",
+        "marca_modelo_equipo": ""
+      },
+      "missing_fields": [
+        "nombre_cliente",
+        "tipo_servicio",
+        "descripcion_problema",
+        "direccion",
+        "fecha_preferida",
+        "hora_preferida",
+        "telefono"
+      ],
+      "needs_confirmation": false
+    }
+  }
+]
