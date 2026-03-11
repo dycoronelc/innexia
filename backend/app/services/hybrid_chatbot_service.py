@@ -15,51 +15,47 @@ class HybridChatbotService:
         self.agents_service = agents_service
         self.use_agents = True  # Flag para habilitar/deshabilitar agentes
     
+    def _agents_available(self) -> bool:
+        """True si los agentes están instalados y habilitados (sino se usa n8n/fallback)."""
+        return self.use_agents and self.agents_service is not None
+
     async def detect_intent_with_agents(self, message: str, conversation_context: Dict[str, Any]) -> Dict[str, Any]:
-        """Detecta intención usando agentes especializados"""
+        """Detecta intención usando agentes especializados o fallback (n8n)."""
         try:
-            if self.use_agents:
+            if self._agents_available():
                 result = await self.agents_service.detect_intent(message, conversation_context)
                 return result
-            else:
-                # Fallback al sistema anterior
-                return await self._fallback_intent_detection(message)
+            return await self._fallback_intent_detection(message)
         except Exception as e:
             logger.warning(f"Error en detección con agentes, usando fallback: {e}")
             return await self._fallback_intent_detection(message)
-    
+
     async def generate_bmc_with_agents(self, business_idea: str, use_high_quality: bool = False) -> Dict[str, Any]:
-        """Genera BMC usando agentes especializados"""
+        """Genera BMC usando agentes especializados o fallback (n8n)."""
         try:
-            if self.use_agents:
+            if self._agents_available():
                 return await self.agents_service.generate_bmc(business_idea, use_high_quality)
-            else:
-                # Fallback al sistema anterior
-                return await self._fallback_bmc_generation(business_idea, use_high_quality)
+            return await self._fallback_bmc_generation(business_idea, use_high_quality)
         except Exception as e:
             logger.warning(f"Error generando BMC con agentes, usando fallback: {e}")
             return await self._fallback_bmc_generation(business_idea, use_high_quality)
-    
+
     async def generate_business_plan_with_agents(self, business_idea: str) -> Dict[str, Any]:
-        """Genera plan de negocio usando agentes especializados"""
+        """Genera plan de negocio usando agentes especializados o fallback (n8n)."""
         try:
-            if self.use_agents:
+            if self._agents_available():
                 return await self.agents_service.generate_business_plan(business_idea)
-            else:
-                # Fallback al sistema anterior
-                return await self._fallback_business_plan_generation(business_idea)
+            return await self._fallback_business_plan_generation(business_idea)
         except Exception as e:
             logger.warning(f"Error generando plan de negocio con agentes, usando fallback: {e}")
             return await self._fallback_business_plan_generation(business_idea)
-    
+
     async def generate_marketing_plan_with_agents(self, business_idea: str) -> Dict[str, Any]:
-        """Genera plan de marketing usando agentes especializados"""
+        """Genera plan de marketing usando agentes especializados o fallback (n8n)."""
         try:
-            if self.use_agents:
+            if self._agents_available():
                 return await self.agents_service.generate_marketing_plan(business_idea)
-            else:
-                # Fallback al sistema anterior
-                return await self._fallback_marketing_plan_generation(business_idea)
+            return await self._fallback_marketing_plan_generation(business_idea)
         except Exception as e:
             logger.warning(f"Error generando plan de marketing con agentes, usando fallback: {e}")
             return await self._fallback_marketing_plan_generation(business_idea)

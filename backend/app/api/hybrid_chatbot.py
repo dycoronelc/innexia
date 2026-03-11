@@ -272,7 +272,7 @@ async def get_hybrid_status(
             "status": "success",
             "data": {
                 "agents_enabled": hybrid_chatbot_service.use_agents,
-                "available_agents": list(hybrid_chatbot_service.agents_service.agents.keys()),
+                "available_agents": list(hybrid_chatbot_service.agents_service.agents.keys()) if hybrid_chatbot_service.agents_service else [],
                 "fallback_available": True
             }
         }
