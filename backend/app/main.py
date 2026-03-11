@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 import os
 
 # Configurar logging antes de importar otros módulos
@@ -19,6 +20,18 @@ app = FastAPI(
     description="API para gestión de proyectos y Business Model Canvas",
     version="1.0.0"
 )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    """Asegura que cualquier error no controlado devuelva JSON (CORS se aplica a la respuesta)."""
+    if isinstance(exc, HTTPException):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Error interno del servidor", "error": type(exc).__name__},
+    )
+
 
 # Configurar CORS (en producción CORS_ORIGINS debe incluir la URL del frontend, ej. https://frontend-xxx.up.railway.app)
 app.add_middleware(

@@ -219,7 +219,21 @@ async def login_user_with_company(
     
     # Buscar usuario por username
     user = db.query(User).filter(User.username == user_data.username).first()
-    if not user or not verify_password(user_data.password, user.hashed_password):
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nombre de usuario o contraseña incorrectos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    try:
+        if not verify_password(user_data.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Nombre de usuario o contraseña incorrectos",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    except (ValueError, Exception):
+        # bcrypt/passlib puede lanzar ValueError (ej. password > 72 bytes); no exponer 500
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nombre de usuario o contraseña incorrectos",
