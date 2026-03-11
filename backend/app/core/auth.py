@@ -41,14 +41,23 @@ security = HTTPBearer()
 # FUNCIONES DE HASHING Y TOKENS
 # ============================================================================
 
+def _truncate_password_72_bytes(password: str) -> str:
+    """Bcrypt solo acepta hasta 72 bytes; truncar para evitar ValueError en verify/hash."""
+    pwd_bytes = password.encode("utf-8")
+    if len(pwd_bytes) <= 72:
+        return password
+    return pwd_bytes[:72].decode("utf-8", errors="ignore") or password[:72]
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verificar contraseña en texto plano contra hash"""
+    plain_password = _truncate_password_72_bytes(plain_password)
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message=".*bcrypt.*", category=UserWarning)
         return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
     """Generar hash de contraseña"""
+    password = _truncate_password_72_bytes(password)
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message=".*bcrypt.*", category=UserWarning)
         return pwd_context.hash(password)
