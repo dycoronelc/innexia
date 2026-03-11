@@ -88,33 +88,8 @@ const handleResponse = async <T>(response: Response): Promise<ApiResponse<T>> =>
         message: data?.message || 'Operación exitosa'
       };
     } else {
-      // Detectar token expirado (401 Unauthorized)
-      if (response.status === 401) {
-        // Limpiar datos de autenticación
-        const TOKEN_KEY = import.meta.env.VITE_JWT_STORAGE_KEY || 'innexia_token';
-        const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY || 'innexia_refresh_token';
-        const USER_KEY = import.meta.env.VITE_USER_STORAGE_KEY || 'innexia_user';
-        const COMPANY_KEY = 'innexia_company';
-        
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(COMPANY_KEY);
-        
-        // Redirigir al login con mensaje
-        const loginUrl = '/login';
-        const message = 'Su sesión ha expirado por inactividad. Por favor, inicie sesión nuevamente.';
-        
-        // Usar replace para evitar que el usuario pueda volver atrás
-        window.location.replace(`${loginUrl}?message=${encodeURIComponent(message)}&type=session_expired`);
-        
-        return {
-          status: 'error',
-          error: 'Token expirado',
-          message: 'Su sesión ha expirado. Redirigiendo al login...'
-        };
-      }
-      
+      // 401: devolver error sin redirigir aquí (login puede devolver 401 por credenciales incorrectas).
+      // El redirect "sesión expirada" lo hace AuthContext cuando isAuthenticated && 401.
       return {
         status: 'error',
         error: data?.detail || data?.message || `Error ${response.status}`,
