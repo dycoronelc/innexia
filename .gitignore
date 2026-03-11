@@ -9,6 +9,7 @@ backend/.env.*
 logs
 *.log
 errores-backend.txt
+errores.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
