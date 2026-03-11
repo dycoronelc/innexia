@@ -8,7 +8,6 @@ import {
   Gavel as GavelIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
-import type { ProjectAgentOutput } from '../types';
 
 const cardSx = {
   borderRadius: 3,
@@ -50,48 +49,48 @@ export const EstrategiaComercialCards: React.FC<{ data?: Record<string, unknown>
   const ventas = (data.estrategia_ventas || {}) as Record<string, unknown>;
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">
               <StoreIcon /> Análisis de mercado
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-              {analisis.tamano_mercado && <Chip size="small" label={`Mercado: ${analisis.tamano_mercado}`} />}
-              {analisis.crecimiento_anual && <Chip size="small" label={`Crecimiento: ${analisis.crecimiento_anual}`} />}
+              {analisis.tamano_mercado != null ? <Chip size="small" label={`Mercado: ${String(analisis.tamano_mercado)}`} /> : null}
+              {analisis.crecimiento_anual != null ? <Chip size="small" label={`Crecimiento: ${String(analisis.crecimiento_anual)}`} /> : null}
             </Box>
-            {analisis.competidores_principales && renderList(analisis.competidores_principales)}
-            {analisis.ventaja_competitiva && <Typography variant="body2" sx={{ mt: 1 }}>{String(analisis.ventaja_competitiva)}</Typography>}
+            {(analisis.competidores_principales ? renderList(analisis.competidores_principales) : null) as React.ReactNode}
+            {analisis.ventaja_competitiva != null ? <Typography variant="body2" sx={{ mt: 1 }}>{String(analisis.ventaja_competitiva)}</Typography> : null}
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">Estrategia de precios</Typography>
-            {precios.modelo && <Typography variant="body2"><strong>Modelo:</strong> {String(precios.modelo)}</Typography>}
-            {precios.justificacion && <Typography variant="body2" sx={{ mt: 0.5 }}>{String(precios.justificacion)}</Typography>}
-            {precios.descuentos && renderList(precios.descuentos)}
+            {precios.modelo != null ? <Typography variant="body2"><strong>Modelo:</strong> {String(precios.modelo)}</Typography> : null}
+            {precios.justificacion != null ? <Typography variant="body2" sx={{ mt: 0.5 }}>{String(precios.justificacion)}</Typography> : null}
+            {(precios.descuentos ? renderList(precios.descuentos) : null) as React.ReactNode}
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">Estrategia de marketing</Typography>
-            {marketing.canales_principales && renderList(marketing.canales_principales)}
-            {marketing.presupuesto_mensual != null && <Typography variant="body2" sx={{ mt: 1 }}>Presupuesto mensual: {String(marketing.presupuesto_mensual)}</Typography>}
-            {marketing.kpis && renderList(marketing.kpis)}
+            {(marketing.canales_principales ? renderList(marketing.canales_principales) : null) as React.ReactNode}
+            {marketing.presupuesto_mensual != null ? <Typography variant="body2" sx={{ mt: 1 }}>Presupuesto mensual: {String(marketing.presupuesto_mensual)}</Typography> : null}
+            {(marketing.kpis ? renderList(marketing.kpis) : null) as React.ReactNode}
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">Estrategia de ventas</Typography>
-            {ventas.proceso && <Typography variant="body2"><strong>Proceso:</strong> {String(ventas.proceso)}</Typography>}
-            {ventas.ciclo_venta_estimado && <Typography variant="body2">Ciclo de venta: {String(ventas.ciclo_venta_estimado)}</Typography>}
-            {ventas.tasa_conversion_objetivo && <Typography variant="body2">Conversión objetivo: {String(ventas.tasa_conversion_objetivo)}</Typography>}
+            {ventas.proceso != null ? <Typography variant="body2"><strong>Proceso:</strong> {String(ventas.proceso)}</Typography> : null}
+            {ventas.ciclo_venta_estimado != null ? <Typography variant="body2">Ciclo de venta: {String(ventas.ciclo_venta_estimado)}</Typography> : null}
+            {ventas.tasa_conversion_objetivo != null ? <Typography variant="body2">Conversión objetivo: {String(ventas.tasa_conversion_objetivo)}</Typography> : null}
           </CardContent>
         </Card>
       </Grid>
@@ -110,23 +109,21 @@ export const RoadmapCards: React.FC<{ data?: Record<string, unknown> }> = ({ dat
       )}
       <Grid container spacing={2}>
         {fases.map((fase, i) => (
-          <Grid item xs={12} md={4} key={i}>
+          <Grid size={{ xs: 12, md: 4 }} key={i}>
             <Card sx={{ ...cardSx, borderLeft: '4px solid', borderLeftColor: 'primary.main' }}>
               <CardContent>
                 <Typography variant="h6" sx={sectionTitleSx}>
-                  <TimelineIcon color="primary" /> {String(fase.fase || `Fase ${i + 1}`)}
+                  <TimelineIcon color="primary" /> {String(fase.fase ?? `Fase ${i + 1}`)}
                 </Typography>
-                {fase.duracion_meses != null && <Chip size="small" label={`${fase.duracion_meses} meses`} sx={{ mb: 1 }} />}
-                {fase.hitos && (
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 1 }}>Hitos</Typography>
-                )}
-                {fase.hitos && renderList(fase.hitos)}
-                {fase.recursos_necesarios && (
+                {fase.duracion_meses != null ? <Chip size="small" label={`${fase.duracion_meses} meses`} sx={{ mb: 1 }} /> : null}
+                {fase.hitos != null ? <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 1 }}>Hitos</Typography> : null}
+                {(fase.hitos ? renderList(fase.hitos) : null) as React.ReactNode}
+                {fase.recursos_necesarios ? (
                   <>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 1 }}>Recursos</Typography>
-                    {renderList(fase.recursos_necesarios)}
+                    {renderList(fase.recursos_necesarios) as React.ReactNode}
                   </>
-                )}
+                ) : null}
               </CardContent>
             </Card>
           </Grid>
@@ -144,50 +141,53 @@ export const AnalisisNumericosCards: React.FC<{ data?: Record<string, unknown> }
   const viabilidad = data.viabilidad_financiera;
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">
               <ChartIcon /> Inversión inicial
             </Typography>
-            {inversion.total != null && <Typography variant="h5" color="primary.main">{Number(inversion.total).toLocaleString()}</Typography>}
-            {inversion.desglose && renderList(inversion.desglose as unknown[])}
+            {inversion.total != null ? <Typography variant="h5" color="primary.main">{Number(inversion.total).toLocaleString()}</Typography> : null}
+            {(inversion.desglose ? renderList(inversion.desglose as unknown[]) : null) as React.ReactNode}
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">Métricas clave</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              {metricas.roi_3_anos && <Typography variant="body2"><strong>ROI 3 años:</strong> {String(metricas.roi_3_anos)}</Typography>}
-              {metricas.punto_equilibrio_meses && <Typography variant="body2"><strong>Punto equilibrio:</strong> {String(metricas.punto_equilibrio_meses)} meses</Typography>}
-              {metricas.ltv_cac_ratio && <Typography variant="body2"><strong>LTV/CAC:</strong> {String(metricas.ltv_cac_ratio)}</Typography>}
-              {metricas.margen_bruto && <Typography variant="body2"><strong>Margen bruto:</strong> {String(metricas.margen_bruto)}</Typography>}
+              {metricas.roi_3_anos != null ? <Typography variant="body2"><strong>ROI 3 años:</strong> {String(metricas.roi_3_anos)}</Typography> : null}
+              {metricas.punto_equilibrio_meses != null ? <Typography variant="body2"><strong>Punto equilibrio:</strong> {String(metricas.punto_equilibrio_meses)} meses</Typography> : null}
+              {metricas.ltv_cac_ratio != null ? <Typography variant="body2"><strong>LTV/CAC:</strong> {String(metricas.ltv_cac_ratio)}</Typography> : null}
+              {metricas.margen_bruto != null ? <Typography variant="body2"><strong>Margen bruto:</strong> {String(metricas.margen_bruto)}</Typography> : null}
             </Box>
-            {viabilidad && <Chip label={`Viabilidad: ${String(viabilidad)}`} color="success" size="small" sx={{ mt: 1 }} />}
+            {viabilidad != null ? <Chip label={`Viabilidad: ${String(viabilidad)}`} color="success" size="small" sx={{ mt: 1 }} /> : null}
           </CardContent>
         </Card>
       </Grid>
       {proyecciones.length > 0 && (
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card sx={cardSx}>
             <CardContent>
               <Typography variant="h6" sx={sectionTitleSx} color="primary">Proyecciones 3 años</Typography>
               <Grid container spacing={2}>
-                {proyecciones.map((p, i) => (
-                  <Grid item xs={12} sm={4} key={i}>
-                    <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 2 }}>
-                      <Typography variant="subtitle2">Año {(p as Record<string, unknown>).ano}</Typography>
-                      <Typography variant="body2">Ingresos: {(p as Record<string, unknown>).ingresos != null ? Number((p as Record<string, unknown>).ingresos).toLocaleString() : '-'}</Typography>
-                      <Typography variant="body2">Costos: {(p as Record<string, unknown>).costos != null ? Number((p as Record<string, unknown>).costos).toLocaleString() : '-'}</Typography>
-                      <Typography variant="body2" fontWeight={600}>Utilidad: {(p as Record<string, unknown>).utilidad_neta != null ? Number((p as Record<string, unknown>).utilidad_neta).toLocaleString() : '-'}</Typography>
-                      {(p as Record<string, unknown>).clientes_estimados != null && (
-                        <Typography variant="caption">Clientes: {(p as Record<string, unknown>).clientes_estimados}</Typography>
-                      )}
-                    </Box>
-                  </Grid>
-                ))}
+                {proyecciones.map((p, i) => {
+                  const row = p as Record<string, unknown>;
+                  return (
+                    <Grid size={{ xs: 12, sm: 4 }} key={i}>
+                      <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 2 }}>
+                        <Typography variant="subtitle2">Año {String(row.ano ?? '')}</Typography>
+                        <Typography variant="body2">Ingresos: {row.ingresos != null ? Number(row.ingresos).toLocaleString() : '-'}</Typography>
+                        <Typography variant="body2">Costos: {row.costos != null ? Number(row.costos).toLocaleString() : '-'}</Typography>
+                        <Typography variant="body2" fontWeight={600}>Utilidad: {row.utilidad_neta != null ? Number(row.utilidad_neta).toLocaleString() : '-'}</Typography>
+                        {row.clientes_estimados != null ? (
+                          <Typography variant="caption">Clientes: {String(row.clientes_estimados)}</Typography>
+                        ) : null}
+                      </Box>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </CardContent>
           </Card>
@@ -204,34 +204,34 @@ export const RiesgosCards: React.FC<{ data?: Record<string, unknown> }> = ({ dat
   const recomendaciones = (data.recomendaciones || []) as unknown[];
   return (
     <Grid container spacing={2}>
-      {nivel && (
-        <Grid item xs={12}>
+      {nivel != null && nivel !== '' ? (
+        <Grid size={12}>
           <Chip label={`Nivel de riesgo general: ${String(nivel)}`} color={nivel === 'ALTO' ? 'error' : nivel === 'MEDIO' ? 'warning' : 'success'} size="medium" />
         </Grid>
-      )}
+      ) : null}
       {riesgos.map((r, i) => (
-        <Grid item xs={12} md={6} key={i}>
+        <Grid size={{ xs: 12, md: 6 }} key={i}>
           <Card sx={{ ...cardSx, borderLeft: '4px solid', borderLeftColor: (r.probabilidad === 'ALTA' || r.impacto === 'ALTO') ? 'error.main' : 'warning.main' }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontSize: '1rem', mb: 0.5 }}>
                 <WarningIcon sx={{ fontSize: 20, mr: 0.5 }} /> {String(r.riesgo)}
               </Typography>
               <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mb: 0.5 }}>
-                {r.categoria && <Chip size="small" label={String(r.categoria)} />}
-                {r.probabilidad && <Chip size="small" variant="outlined" label={`Prob: ${String(r.probabilidad)}`} />}
-                {r.impacto && <Chip size="small" variant="outlined" label={`Impacto: ${String(r.impacto)}`} />}
+                {r.categoria != null ? <Chip size="small" label={String(r.categoria)} /> : null}
+                {r.probabilidad != null ? <Chip size="small" variant="outlined" label={`Prob: ${String(r.probabilidad)}`} /> : null}
+                {r.impacto != null ? <Chip size="small" variant="outlined" label={`Impacto: ${String(r.impacto)}`} /> : null}
               </Box>
-              {r.mitigacion && <Typography variant="body2" color="text.secondary">{String(r.mitigacion)}</Typography>}
+              {r.mitigacion != null ? <Typography variant="body2" color="text.secondary">{String(r.mitigacion)}</Typography> : null}
             </CardContent>
           </Card>
         </Grid>
       ))}
       {recomendaciones.length > 0 && (
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card sx={cardSx}>
             <CardContent>
               <Typography variant="h6" sx={sectionTitleSx} color="primary">Recomendaciones</Typography>
-              {renderList(recomendaciones)}
+              {renderList(recomendaciones) as React.ReactNode}
             </CardContent>
           </Card>
         </Grid>
@@ -250,7 +250,7 @@ export const VeredictoCards: React.FC<{ data?: Record<string, unknown> }> = ({ d
   const siguientePaso = data.siguiente_paso;
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={4}>
+      <Grid size={{ xs: 12, md: 4 }} key="decision">
         <Card sx={{ ...cardSx, bgcolor: decision === 'POSITIVO' ? 'success.50' : 'grey.100' }}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">
@@ -261,24 +261,24 @@ export const VeredictoCards: React.FC<{ data?: Record<string, unknown> }> = ({ d
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={4}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">Fortalezas</Typography>
-            {renderList(fortalezas)}
+            {renderList(fortalezas) as React.ReactNode}
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={4}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" sx={sectionTitleSx} color="primary">Debilidades</Typography>
-            {renderList(debilidades)}
+            {renderList(debilidades) as React.ReactNode}
           </CardContent>
         </Card>
       </Grid>
-      {recomendacion && (
-        <Grid item xs={12}>
+      {(recomendacion != null && recomendacion !== '' ? (
+        <Grid size={12} key="recomendacion">
           <Card sx={{ ...cardSx, borderLeft: '4px solid', borderLeftColor: 'primary.main' }}>
             <CardContent>
               <Typography variant="h6" sx={sectionTitleSx} color="primary">Recomendación estratégica</Typography>
@@ -286,9 +286,9 @@ export const VeredictoCards: React.FC<{ data?: Record<string, unknown> }> = ({ d
             </CardContent>
           </Card>
         </Grid>
-      )}
-      {siguientePaso && (
-        <Grid item xs={12}>
+      ) : null) as React.ReactNode}
+      {(siguientePaso != null && siguientePaso !== '' ? (
+        <Grid size={12} key="siguientePaso">
           <Card sx={cardSx}>
             <CardContent>
               <Typography variant="h6" sx={sectionTitleSx} color="primary">Siguiente paso</Typography>
@@ -296,7 +296,7 @@ export const VeredictoCards: React.FC<{ data?: Record<string, unknown> }> = ({ d
             </CardContent>
           </Card>
         </Grid>
-      )}
+      ) : null) as React.ReactNode}
     </Grid>
   );
 };

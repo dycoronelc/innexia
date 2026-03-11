@@ -59,7 +59,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useAuth } from '../contexts/AuthContext';
 import { educationalContentService } from '../services/api';
-import ContentForm from '../components/ContentForm';
+import ContentForm, { type ContentFormData } from '../components/ContentForm';
 
 interface ContentItem {
   id: number;
@@ -749,7 +749,7 @@ const ContentManagementPage: React.FC = () => {
         open={showEditDialog}
         onClose={() => setShowEditDialog(false)}
         onSubmit={handleEditSubmit}
-        initialData={selectedContent}
+        initialData={selectedContent ? (selectedContent as Partial<ContentFormData>) : undefined}
         loading={formLoading}
         mode="edit"
       />

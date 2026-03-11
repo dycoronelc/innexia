@@ -45,37 +45,35 @@ class NewsFeedService {
     }
 
     const url = `/api/news-feed${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return apiRequest<NewsResponse>(url, {
-      method: 'GET',
-    }, token);
+    const res = await apiRequest<NewsResponse>(url, { method: 'GET' }, token);
+    return res.data ?? { data: [], status: 'success', message: '' };
   }
 
   /**
    * Obtiene noticias de feeds RSS personalizados
    */
   async getCustomFeed(feedUrls: string[], token: string): Promise<NewsResponse> {
-    return apiRequest<NewsResponse>('/api/news-feed/custom-feed', {
+    const res = await apiRequest<NewsResponse>('/api/news-feed/custom-feed', {
       method: 'POST',
       body: JSON.stringify({ feed_urls: feedUrls }),
     }, token);
+    return res.data ?? { data: [], status: 'success', message: '' };
   }
 
   /**
    * Limpia el cache de noticias
    */
   async clearCache(token: string): Promise<{ message: string }> {
-    return apiRequest<{ message: string }>('/api/news-feed/clear-cache', {
-      method: 'POST',
-    }, token);
+    const res = await apiRequest<{ message: string }>('/api/news-feed/clear-cache', { method: 'POST' }, token);
+    return res.data ?? { message: '' };
   }
 
   /**
    * Obtiene la lista de feeds disponibles
    */
   async getAvailableFeeds(token: string): Promise<{ feeds: AvailableFeed[] }> {
-    return apiRequest<{ feeds: AvailableFeed[] }>('/api/news-feed/feeds', {
-      method: 'GET',
-    }, token);
+    const res = await apiRequest<{ feeds: AvailableFeed[] }>('/api/news-feed/feeds', { method: 'GET' }, token);
+    return res.data ?? { feeds: [] };
   }
 }
 

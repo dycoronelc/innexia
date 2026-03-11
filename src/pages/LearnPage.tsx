@@ -248,10 +248,10 @@ const LearnPage: React.FC = () => {
     try {
       const response = await newsFeedService.getNews({ limit: 50 }, token);
       
-      if (response.status === 'success' && response.data) {
-        // La respuesta puede tener la estructura { data: { data: [...], total: X } }
-        const articlesData = Array.isArray(response.data) ? response.data : response.data.data;
-        setNewsArticles(articlesData || []);
+      if (response.status === 'success') {
+        const data = (response as { data?: unknown }).data;
+        const articlesData = Array.isArray(data) ? data : (data && typeof data === 'object' && 'data' in data ? (data as { data: unknown[] }).data : []);
+        setNewsArticles((Array.isArray(articlesData) ? articlesData : []) as import('../services/newsFeedService').NewsArticle[]);
       }
     } catch (error) {
       console.error('Error fetching news:', error);
@@ -1160,7 +1160,7 @@ const LearnPage: React.FC = () => {
                 >
                   {selectedContent.content_type === 'article' ? 'Leer Artículo' : 
                    selectedContent.content_type === 'course' ? 'Ver Curso' :
-                   selectedContent.content_type === 'webinar' ? 'Ver Webinar' :
+                   (selectedContent.content_type as string) === 'webinar' ? 'Ver Webinar' :
                    'Ver contenido'}
                 </Button>
               ) : null}

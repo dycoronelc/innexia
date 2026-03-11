@@ -98,7 +98,7 @@ const UsersPage: React.FC = () => {
       const response = await userService.getUsers(token);
       if (response.status === 'success') {
         console.log('Users data:', response.data);
-        const processedData = (response.data || []).map(user => ({
+        const processedData = (response.data || []).map((user: { created_at?: string | null; updated_at?: string | null; [key: string]: unknown }) => ({
           ...user,
           created_at: user.created_at || null,
           updated_at: user.updated_at || null
@@ -720,7 +720,7 @@ const UsersPage: React.FC = () => {
               !formData.email || 
               !formData.full_name || 
               (!editingUser && !formData.password) ||
-              (formData.password && formData.password !== formData.confirm_password)
+              Boolean(formData.password && formData.password !== formData.confirm_password)
             }
           >
             {editingUser ? 'Actualizar' : 'Crear'}

@@ -77,7 +77,7 @@ const ProjectDocuments: React.FC<ProjectDocumentsProps> = ({
         fileSize: file.size,
         uploadedBy: 'Usuario Actual', // En una app real, esto vendría del contexto de autenticación
         uploadedAt: new Date(),
-        projectId
+        projectId: Number(projectId)
       });
     }
   };

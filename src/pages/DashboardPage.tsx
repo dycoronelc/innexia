@@ -740,7 +740,7 @@ const DashboardPage: React.FC = () => {
 
                       // Get project names
                       const getProjectName = (projectId: string) => {
-                        const project = projects.find(p => p.id === projectId);
+                        const project = projects.find(p => String(p.id) === projectId);
                         return project ? project.name : 'Proyecto Desconocido';
                       };
 

@@ -14,6 +14,7 @@ export interface ProactiveSuggestion {
   data_sources?: string[];
   confidence_score?: number;
   action_url?: string;
+  action_text?: string;
   action_type?: string;
   is_active: boolean;
   is_read: boolean;
@@ -81,20 +82,20 @@ export class ProactiveSuggestionService {
     }
     
     const service = new ProactiveSuggestionService(token);
-    return await service.getSuggestions(10);
+    return await service.getSuggestions({ limit: 10 });
   }
 
-  static async markAsRead(suggestionId: number): Promise<{ success: boolean; message: string; data: { suggestion_id: number } }> {
+  static async markAsRead(suggestionId: number): Promise<ProactiveSuggestion> {
     const token = ProactiveSuggestionService.getToken();
     if (!token) {
       throw new Error('No hay token de autenticación disponible');
     }
     
     const service = new ProactiveSuggestionService(token);
-    return await service.markSuggestionRead(suggestionId);
+    return await service.markAsRead(suggestionId);
   }
 
-  static async dismissSuggestion(suggestionId: number): Promise<{ success: boolean; message: string; data: { suggestion_id: number } }> {
+  static async dismissSuggestion(suggestionId: number): Promise<ProactiveSuggestion> {
     const token = ProactiveSuggestionService.getToken();
     if (!token) {
       throw new Error('No hay token de autenticación disponible');
@@ -106,7 +107,7 @@ export class ProactiveSuggestionService {
 
   // Crear sugerencia
   async createSuggestion(suggestion: Omit<ProactiveSuggestion, 'id' | 'user_id' | 'created_at' | 'read_at' | 'dismissed_at' | 'applied_at'>): Promise<ProactiveSuggestion> {
-    const response = await apiRequest<ProactiveSuggestion>(
+    const response = await apiRequest<ProactiveSuggestion | { suggestion_id: number }>(
       '/api/proactive-suggestions/',
       {
         method: 'POST',
@@ -118,8 +119,10 @@ export class ProactiveSuggestionService {
     if (response.status === 'error') {
       throw new Error(response.error || 'Error al crear sugerencia');
     }
-
-    return response.data!;
+    if (!response.data) {
+      throw new Error('No se recibió datos de la sugerencia creada');
+    }
+    return response.data as ProactiveSuggestion;
   }
 
   // Obtener sugerencias

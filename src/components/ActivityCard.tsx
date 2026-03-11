@@ -61,6 +61,7 @@ if (!document.getElementById('spin-animation')) {
 interface ActivityCardProps {
   activity: ProjectActivity;
   onUpdate: (activity: ProjectActivity) => void;
+  onDelete?: (id: string) => void | Promise<void>;
   availableTags: Array<{ id: string; name: string; color: string }>;
   availableUsers: Array<{ id: string; fullName: string; username: string; role: string }>;
   availableCategories: Array<{ id: string; name: string; color: string }>;
@@ -69,6 +70,7 @@ interface ActivityCardProps {
 const ActivityCard: React.FC<ActivityCardProps> = ({
   activity,
   onUpdate,
+  onDelete,
   availableTags,
   availableUsers,
   availableCategories

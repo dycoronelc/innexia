@@ -324,7 +324,7 @@ const DocumentsPage: React.FC = () => {
       <Paper sx={{ p: 3, mb: 3 }}>
         <Grid container spacing={3} alignItems="center">
           {/* Búsqueda */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               placeholder="Buscar documentos..."
@@ -341,7 +341,7 @@ const DocumentsPage: React.FC = () => {
           </Grid>
 
           {/* Filtros */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <FormControl size="small" sx={{ minWidth: 120 }}>
                 <InputLabel>Tipo</InputLabel>
@@ -416,7 +416,7 @@ const DocumentsPage: React.FC = () => {
       {loading ? (
         <Grid container spacing={3}>
           {[...Array(6)].map((_, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
               <Card>
                 <CardContent>
                   <Skeleton variant="text" width="80%" height={24} />
@@ -433,7 +433,7 @@ const DocumentsPage: React.FC = () => {
       ) : (
         <Grid container spacing={3}>
           {filteredDocuments.map((doc) => (
-            <Grid item xs={12} sm={6} md={4} key={doc.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={doc.id}>
               <Card 
                 sx={{ 
                   height: '100%',

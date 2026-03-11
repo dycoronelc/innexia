@@ -223,7 +223,7 @@ const ActivitiesPage: React.FC = () => {
 
       {/* Kanban Board */}
       <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Paper sx={{ p: 2, height: 'fit-content' }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               Por Hacer ({groupedActivities.todo.length})
@@ -242,7 +242,7 @@ const ActivitiesPage: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Paper sx={{ p: 2, height: 'fit-content' }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               En Progreso ({groupedActivities['in-progress'].length})
@@ -261,7 +261,7 @@ const ActivitiesPage: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Paper sx={{ p: 2, height: 'fit-content' }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               En Revisión ({groupedActivities.review.length})
@@ -280,7 +280,7 @@ const ActivitiesPage: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Paper sx={{ p: 2, height: 'fit-content' }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               Completadas ({groupedActivities.completed.length})

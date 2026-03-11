@@ -932,7 +932,12 @@ export const educationalContentService = {
     return apiRequest('/api/educational-content/upload-file', {
       method: 'POST',
       body: formData,
-    }, token, true); // isFormData = true
+    }, token);
+  },
+
+  // Subir thumbnail (imagen)
+  uploadThumbnail: async (file: File, token: string): Promise<ApiResponse> => {
+    return educationalContentService.uploadContentFile(file, 'image', token);
   },
 };
 

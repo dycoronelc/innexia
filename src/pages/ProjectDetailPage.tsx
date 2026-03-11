@@ -245,7 +245,7 @@ const ProjectDetailPage: React.FC = () => {
     
     try {
       // Refrescando documentos del proyecto
-      const documentsResponse = await documentService.getProjectDocuments(projectId, token);
+      const documentsResponse = await documentService.getProjectDocuments(id ?? '', token);
       if (documentsResponse.status === 'success') {
         // Raw documents from backend
         const processedDocuments = documentsResponse.data.map((document: any) => ({
@@ -257,7 +257,7 @@ const ProjectDetailPage: React.FC = () => {
           uploadedBy: document.uploader_name || 'Sin especificar',
           uploadedAt: document.created_at ? new Date(document.created_at) : new Date(),
           description: document.description || '',
-          projectId: id
+          projectId: Number(id)
         }));
         // Processed documents
         setProjectDocuments(processedDocuments);
@@ -298,7 +298,7 @@ const ProjectDetailPage: React.FC = () => {
       }
 
       // Cargar actividades del proyecto
-      const activitiesResponse = await activityService.getProjectActivities(id, token);
+      const activitiesResponse = await activityService.getProjectActivities(id ?? '', token);
       if (activitiesResponse.status === 'success') {
         // Raw activities from backend
         const activities = activitiesResponse.data.map((activity: any) => {
@@ -332,7 +332,7 @@ const ProjectDetailPage: React.FC = () => {
       }
 
       // Cargar documentos del proyecto
-      const documentsResponse = await documentService.getProjectDocuments(id, token);
+      const documentsResponse = await documentService.getProjectDocuments(id ?? '', token);
       if (documentsResponse.status === 'success') {
         // Raw documents from backend
         const processedDocuments = documentsResponse.data.map((document: any) => ({
@@ -344,7 +344,7 @@ const ProjectDetailPage: React.FC = () => {
           uploadedBy: document.uploader_name || 'Sin especificar',
           uploadedAt: document.created_at ? new Date(document.created_at) : new Date(),
           description: document.description || '',
-          projectId: id
+          projectId: Number(id)
         }));
         // Processed documents
         setProjectDocuments(processedDocuments);
@@ -423,11 +423,11 @@ const ProjectDetailPage: React.FC = () => {
           };
           // Test endpoint failed
         }
-      } catch (testError) {
+      } catch (testError: unknown) {
         console.error('Test endpoint error:', testError);
         response = {
           status: 'error',
-          error: testError.message
+          error: testError instanceof Error ? testError.message : String(testError)
         };
       }
       
@@ -437,7 +437,7 @@ const ProjectDetailPage: React.FC = () => {
         
         const processedBMC: BusinessModelCanvas = {
           id: bmcData.id.toString(),
-          projectId: id,
+          projectId: Number(id),
           keyPartners: bmcData.key_partners || [],
           keyActivities: bmcData.key_activities || [],
           keyResources: bmcData.key_resources || [],
@@ -899,7 +899,7 @@ const ProjectDetailPage: React.FC = () => {
           <ProjectKanban
             activities={projectActivities}
             onUpdateActivities={handleActivitiesUpdate}
-            projectId={project.id}
+            projectId={String(project.id)}
                 availableTags={tags.map(t => ({ id: t.id, name: t.name, color: t.color }))}
                 availableUsers={users.map(u => ({ id: u.id, fullName: u.fullName, username: u.username, role: u.role }))}
                 availableCategories={categories.map(c => ({ id: c.id, name: c.name, color: c.color }))}
@@ -948,7 +948,7 @@ const ProjectDetailPage: React.FC = () => {
         <TabPanel value={tabValue} index={4}>
           <ProjectDocuments
             documents={projectDocuments}
-            projectId={project.id}
+            projectId={String(project.id)}
             onAddDocument={handleAddDocument}
             onDeleteDocument={handleDeleteDocument}
             onUpdateDocument={handleUpdateDocument}

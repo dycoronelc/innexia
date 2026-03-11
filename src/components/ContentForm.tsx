@@ -409,7 +409,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
       newErrors.source_url = 'La URL es requerida para contenido externo';
     }
 
-    if (formData.duration_minutes <= 0 || !formData.duration_formatted.match(/^(\d{1,2}:\d{2}(:\d{2})?)$/)) {
+    if (formData.duration_minutes <= 0 || !formData.duration_formatted?.match(/^(\d{1,2}:\d{2}(:\d{2})?)$/)) {
       newErrors.duration_minutes = 'Ingresa una duración válida en formato mm:ss o hh:mm:ss';
     }
 
@@ -440,9 +440,9 @@ const ContentForm: React.FC<ContentFormProps> = ({
       };
       
       // Incluir el estado de publicación en los datos
-      const dataWithStatus = {
+      const dataWithStatus: ContentFormData = {
         ...cleanedData,
-        status: publishImmediately ? 'published' : 'draft'
+        status: publishImmediately ? 'published' : 'draft',
       };
       
       await onSubmit(dataWithStatus);
@@ -793,8 +793,8 @@ const ContentForm: React.FC<ContentFormProps> = ({
               {formData.content_type === 'podcast' && ' MP3, WAV, OGG, M4A, AAC'}
               {formData.content_type === 'article' && ' PDF, DOC, DOCX, PPT, PPTX'}
               {formData.content_type === 'course' && ' MP4, PDF, DOC, PPT'}
-              {formData.content_type === 'webinar' && ' MP4, AVI, MOV, WMV'}
-              {formData.content_type === 'infographic' && ' JPG, PNG, GIF, WEBP, PDF'}
+              {(formData.content_type as string) === 'webinar' && ' MP4, AVI, MOV, WMV'}
+              {(formData.content_type as string) === 'infographic' && ' JPG, PNG, GIF, WEBP, PDF'}
             </Typography>
           </Box>
 

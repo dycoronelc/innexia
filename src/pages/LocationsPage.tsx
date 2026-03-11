@@ -86,7 +86,7 @@ const LocationsPage: React.FC = () => {
       if (response.status === 'success') {
         console.log('Locations data:', response.data);
         // Asegurarnos de que las fechas se manejen correctamente
-        const processedData = (response.data || []).map(location => ({
+        const processedData = (response.data || []).map((location: { created_at?: string | null; updated_at?: string | null; [key: string]: unknown }) => ({
           ...location,
           created_at: location.created_at || null,
           updated_at: location.updated_at || null

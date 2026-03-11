@@ -601,11 +601,16 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
             {episodes.map((ep, index) => (
               <React.Fragment key={ep.id}>
                 <ListItem
-                  button
-                  selected={ep.id === episode?.id}
+                  component="button"
                   onClick={() => {
                     onEpisodeChange?.(ep);
                     setShowPlaylist(false);
+                  }}
+                  sx={{
+                    textAlign: 'left',
+                    width: '100%',
+                    cursor: 'pointer',
+                    ...(ep.id === episode?.id ? { bgcolor: 'action.selected' } : {}),
                   }}
                 >
                   <ListItemAvatar>

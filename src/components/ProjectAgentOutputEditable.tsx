@@ -139,23 +139,23 @@ export const EstrategiaComercialEditable: React.FC<{
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
           <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid item xs={12}><Typography variant="subtitle2" color="primary">Análisis de mercado</Typography></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="Tamaño mercado" value={form.tamano_mercado} onChange={(e) => setForm({ ...form, tamano_mercado: e.target.value })} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="Crecimiento anual" value={form.crecimiento_anual} onChange={(e) => setForm({ ...form, crecimiento_anual: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Competidores (uno por línea)" value={form.competidores_principales} onChange={(e) => setForm({ ...form, competidores_principales: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" label="Ventaja competitiva" value={form.ventaja_competitiva} onChange={(e) => setForm({ ...form, ventaja_competitiva: e.target.value })} /></Grid>
-            <Grid item xs={12}><Divider /><Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>Estrategia de precios</Typography></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" label="Modelo" value={form.modelo_precios} onChange={(e) => setForm({ ...form, modelo_precios: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Justificación" value={form.justificacion_precios} onChange={(e) => setForm({ ...form, justificacion_precios: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Descuentos (uno por línea)" value={form.descuentos} onChange={(e) => setForm({ ...form, descuentos: e.target.value })} /></Grid>
-            <Grid item xs={12}><Divider /><Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>Estrategia de marketing</Typography></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Canales (uno por línea)" value={form.canales_marketing} onChange={(e) => setForm({ ...form, canales_marketing: e.target.value })} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" type="number" label="Presupuesto mensual" value={form.presupuesto_mensual} onChange={(e) => setForm({ ...form, presupuesto_mensual: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="KPIs (uno por línea)" value={form.kpis} onChange={(e) => setForm({ ...form, kpis: e.target.value })} /></Grid>
-            <Grid item xs={12}><Divider /><Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>Estrategia de ventas</Typography></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" label="Proceso" value={form.proceso_ventas} onChange={(e) => setForm({ ...form, proceso_ventas: e.target.value })} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="Ciclo de venta estimado" value={form.ciclo_venta} onChange={(e) => setForm({ ...form, ciclo_venta: e.target.value })} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="Tasa conversión objetivo" value={form.tasa_conversion} onChange={(e) => setForm({ ...form, tasa_conversion: e.target.value })} /></Grid>
+            <Grid size={12}><Typography variant="subtitle2" color="primary">Análisis de mercado</Typography></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="Tamaño mercado" value={form.tamano_mercado} onChange={(e) => setForm({ ...form, tamano_mercado: e.target.value })} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="Crecimiento anual" value={form.crecimiento_anual} onChange={(e) => setForm({ ...form, crecimiento_anual: e.target.value })} /></Grid>
+            <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Competidores (uno por línea)" value={form.competidores_principales} onChange={(e) => setForm({ ...form, competidores_principales: e.target.value })} /></Grid>
+            <Grid size={12}><TextField fullWidth size="small" label="Ventaja competitiva" value={form.ventaja_competitiva} onChange={(e) => setForm({ ...form, ventaja_competitiva: e.target.value })} /></Grid>
+            <Grid size={12}><Divider /><Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>Estrategia de precios</Typography></Grid>
+            <Grid size={12}><TextField fullWidth size="small" label="Modelo" value={form.modelo_precios} onChange={(e) => setForm({ ...form, modelo_precios: e.target.value })} /></Grid>
+            <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Justificación" value={form.justificacion_precios} onChange={(e) => setForm({ ...form, justificacion_precios: e.target.value })} /></Grid>
+            <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Descuentos (uno por línea)" value={form.descuentos} onChange={(e) => setForm({ ...form, descuentos: e.target.value })} /></Grid>
+            <Grid size={12}><Divider /><Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>Estrategia de marketing</Typography></Grid>
+            <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Canales (uno por línea)" value={form.canales_marketing} onChange={(e) => setForm({ ...form, canales_marketing: e.target.value })} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" type="number" label="Presupuesto mensual" value={form.presupuesto_mensual} onChange={(e) => setForm({ ...form, presupuesto_mensual: e.target.value })} /></Grid>
+            <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="KPIs (uno por línea)" value={form.kpis} onChange={(e) => setForm({ ...form, kpis: e.target.value })} /></Grid>
+            <Grid size={12}><Divider /><Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>Estrategia de ventas</Typography></Grid>
+            <Grid size={12}><TextField fullWidth size="small" label="Proceso" value={form.proceso_ventas} onChange={(e) => setForm({ ...form, proceso_ventas: e.target.value })} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="Ciclo de venta estimado" value={form.ciclo_venta} onChange={(e) => setForm({ ...form, ciclo_venta: e.target.value })} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="Tasa conversión objetivo" value={form.tasa_conversion} onChange={(e) => setForm({ ...form, tasa_conversion: e.target.value })} /></Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -252,10 +252,10 @@ export const RoadmapEditable: React.FC<{
                 <IconButton size="small" onClick={() => removeFase(i)} disabled={fases.length <= 1}><DeleteIcon /></IconButton>
               </Box>
               <Grid container spacing={1}>
-                <Grid item xs={12} sm={4}><TextField fullWidth size="small" label="Nombre fase" value={f.fase} onChange={(e) => updateFase(i, 'fase', e.target.value)} /></Grid>
-                <Grid item xs={12} sm={4}><TextField fullWidth size="small" type="number" label="Duración (meses)" value={f.duracion_meses} onChange={(e) => updateFase(i, 'duracion_meses', e.target.value)} /></Grid>
-                <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Hitos (uno por línea)" value={f.hitos} onChange={(e) => updateFase(i, 'hitos', e.target.value)} /></Grid>
-                <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Recursos necesarios (uno por línea)" value={f.recursos} onChange={(e) => updateFase(i, 'recursos', e.target.value)} /></Grid>
+                <Grid size={{ xs: 12, sm: 4 }}><TextField fullWidth size="small" label="Nombre fase" value={f.fase} onChange={(e) => updateFase(i, 'fase', e.target.value)} /></Grid>
+                <Grid size={{ xs: 12, sm: 4 }}><TextField fullWidth size="small" type="number" label="Duración (meses)" value={f.duracion_meses} onChange={(e) => updateFase(i, 'duracion_meses', e.target.value)} /></Grid>
+                <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Hitos (uno por línea)" value={f.hitos} onChange={(e) => updateFase(i, 'hitos', e.target.value)} /></Grid>
+                <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Recursos necesarios (uno por línea)" value={f.recursos} onChange={(e) => updateFase(i, 'recursos', e.target.value)} /></Grid>
               </Grid>
             </Box>
           ))}
@@ -394,22 +394,22 @@ export const AnalisisFinancieroEditable: React.FC<{
             <Box key={i} sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}><IconButton size="small" onClick={() => removeProyeccion(i)}><DeleteIcon /></IconButton></Box>
               <Grid container spacing={1}>
-                <Grid item xs={6} sm={2}><TextField fullWidth size="small" type="number" label="Año" value={p.ano} onChange={(e) => updateProyeccion(i, 'ano', e.target.value)} /></Grid>
-                <Grid item xs={6} sm={2}><TextField fullWidth size="small" type="number" label="Ingresos" value={p.ingresos} onChange={(e) => updateProyeccion(i, 'ingresos', e.target.value)} /></Grid>
-                <Grid item xs={6} sm={2}><TextField fullWidth size="small" type="number" label="Costos" value={p.costos} onChange={(e) => updateProyeccion(i, 'costos', e.target.value)} /></Grid>
-                <Grid item xs={6} sm={2}><TextField fullWidth size="small" type="number" label="Utilidad neta" value={p.utilidad_neta} onChange={(e) => updateProyeccion(i, 'utilidad_neta', e.target.value)} /></Grid>
-                <Grid item xs={6} sm={2}><TextField fullWidth size="small" type="number" label="Clientes" value={p.clientes_estimados} onChange={(e) => updateProyeccion(i, 'clientes_estimados', e.target.value)} /></Grid>
+                <Grid size={{ xs: 6, sm: 2 }}><TextField fullWidth size="small" type="number" label="Año" value={p.ano} onChange={(e) => updateProyeccion(i, 'ano', e.target.value)} /></Grid>
+                <Grid size={{ xs: 6, sm: 2 }}><TextField fullWidth size="small" type="number" label="Ingresos" value={p.ingresos} onChange={(e) => updateProyeccion(i, 'ingresos', e.target.value)} /></Grid>
+                <Grid size={{ xs: 6, sm: 2 }}><TextField fullWidth size="small" type="number" label="Costos" value={p.costos} onChange={(e) => updateProyeccion(i, 'costos', e.target.value)} /></Grid>
+                <Grid size={{ xs: 6, sm: 2 }}><TextField fullWidth size="small" type="number" label="Utilidad neta" value={p.utilidad_neta} onChange={(e) => updateProyeccion(i, 'utilidad_neta', e.target.value)} /></Grid>
+                <Grid size={{ xs: 6, sm: 2 }}><TextField fullWidth size="small" type="number" label="Clientes" value={p.clientes_estimados} onChange={(e) => updateProyeccion(i, 'clientes_estimados', e.target.value)} /></Grid>
               </Grid>
             </Box>
           ))}
           <Button startIcon={<AddIcon />} onClick={addProyeccion} size="small">Añadir año</Button>
           <Typography variant="subtitle2" color="primary" sx={{ mt: 2 }}>Métricas clave</Typography>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="ROI 3 años" value={roi} onChange={(e) => setRoi(e.target.value)} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" type="number" label="Punto equilibrio (meses)" value={puntoEquilibrio} onChange={(e) => setPuntoEquilibrio(e.target.value)} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="LTV/CAC" value={ltvCac} onChange={(e) => setLtvCac(e.target.value)} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="Margen bruto" value={margenBruto} onChange={(e) => setMargenBruto(e.target.value)} /></Grid>
-            <Grid item xs={12}><TextField fullWidth size="small" label="Viabilidad financiera" value={viabilidad} onChange={(e) => setViabilidad(e.target.value)} placeholder="ej. ALTA" /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="ROI 3 años" value={roi} onChange={(e) => setRoi(e.target.value)} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" type="number" label="Punto equilibrio (meses)" value={puntoEquilibrio} onChange={(e) => setPuntoEquilibrio(e.target.value)} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="LTV/CAC" value={ltvCac} onChange={(e) => setLtvCac(e.target.value)} /></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="Margen bruto" value={margenBruto} onChange={(e) => setMargenBruto(e.target.value)} /></Grid>
+            <Grid size={12}><TextField fullWidth size="small" label="Viabilidad financiera" value={viabilidad} onChange={(e) => setViabilidad(e.target.value)} placeholder="ej. ALTA" /></Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -508,11 +508,11 @@ export const RiesgosEditable: React.FC<{
             <Box key={i} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}><IconButton size="small" onClick={() => removeRiesgo(i)}><DeleteIcon /></IconButton></Box>
               <Grid container spacing={1}>
-                <Grid item xs={12} sm={6}><TextField fullWidth size="small" label="Categoría" value={r.categoria} onChange={(e) => updateRiesgo(i, 'categoria', e.target.value)} /></Grid>
-                <Grid item xs={12}><TextField fullWidth size="small" label="Riesgo" value={r.riesgo} onChange={(e) => updateRiesgo(i, 'riesgo', e.target.value)} /></Grid>
-                <Grid item xs={12} sm={4}><TextField fullWidth size="small" label="Probabilidad" value={r.probabilidad} onChange={(e) => updateRiesgo(i, 'probabilidad', e.target.value)} placeholder="ej. MEDIA" /></Grid>
-                <Grid item xs={12} sm={4}><TextField fullWidth size="small" label="Impacto" value={r.impacto} onChange={(e) => updateRiesgo(i, 'impacto', e.target.value)} placeholder="ej. ALTO" /></Grid>
-                <Grid item xs={12}><TextField fullWidth size="small" multiline rows={2} label="Mitigación" value={r.mitigacion} onChange={(e) => updateRiesgo(i, 'mitigacion', e.target.value)} /></Grid>
+                <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth size="small" label="Categoría" value={r.categoria} onChange={(e) => updateRiesgo(i, 'categoria', e.target.value)} /></Grid>
+                <Grid size={12}><TextField fullWidth size="small" label="Riesgo" value={r.riesgo} onChange={(e) => updateRiesgo(i, 'riesgo', e.target.value)} /></Grid>
+                <Grid size={{ xs: 12, sm: 4 }}><TextField fullWidth size="small" label="Probabilidad" value={r.probabilidad} onChange={(e) => updateRiesgo(i, 'probabilidad', e.target.value)} placeholder="ej. MEDIA" /></Grid>
+                <Grid size={{ xs: 12, sm: 4 }}><TextField fullWidth size="small" label="Impacto" value={r.impacto} onChange={(e) => updateRiesgo(i, 'impacto', e.target.value)} placeholder="ej. ALTO" /></Grid>
+                <Grid size={12}><TextField fullWidth size="small" multiline rows={2} label="Mitigación" value={r.mitigacion} onChange={(e) => updateRiesgo(i, 'mitigacion', e.target.value)} /></Grid>
               </Grid>
             </Box>
           ))}

@@ -87,7 +87,7 @@ const CategoriesPage: React.FC = () => {
       if (response.status === 'success') {
         console.log('Categories data:', response.data);
         // Asegurarnos de que las fechas se manejen correctamente
-        const processedData = (response.data || []).map(category => ({
+        const processedData = (response.data || []).map((category: { created_at?: string | null; updated_at?: string | null; [key: string]: unknown }) => ({
           ...category,
           created_at: category.created_at || null,
           updated_at: category.updated_at || null

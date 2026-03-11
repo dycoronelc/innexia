@@ -284,7 +284,7 @@ const ProjectsPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const project = projects.find(p => p.id === id);
+    const project = projects.find(p => p.id === Number(id));
     const projectName = project?.name || 'este proyecto';
     
     showConfirmationDialog(
@@ -299,11 +299,11 @@ const ProjectsPage: React.FC = () => {
     setConfirmationDialog(prev => ({ ...prev, loading: true }));
     
     try {
-      const response = await projectService.deleteProject(id, token!);
+      const response = await projectService.deleteProject(Number(id), token!);
       
       if (response.status === 'success') {
         // Remover el proyecto de la lista localmente para actualización inmediata
-        setProjects(prev => prev.filter(project => project.id !== id));
+        setProjects(prev => prev.filter(project => project.id !== Number(id)));
         
         // Mostrar mensaje de éxito
         setSnackbar({
@@ -355,7 +355,7 @@ const ProjectsPage: React.FC = () => {
 
   const handleDeleteProject = (project: Project) => {
     handleMenuClose();
-    handleDelete(project.id);
+    handleDelete(String(project.id));
   };
 
   const handleCloseSnackbar = () => {

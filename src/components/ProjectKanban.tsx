@@ -347,11 +347,17 @@ const ProjectKanban: React.FC<ProjectKanbanProps> = ({
       status: formData.status,
       priority: formData.priority,
       assignee: formData.assignee.trim(),
+      assignees: editingActivity?.assignees ?? [],
       startDate: new Date(formData.startDate),
       dueDate: new Date(formData.dueDate),
       createdAt: editingActivity?.createdAt || new Date(),
       updatedAt: new Date(),
-      projectId
+      projectId: Number(projectId),
+      tags: editingActivity?.tags ?? [],
+      comments: editingActivity?.comments ?? [],
+      checklists: editingActivity?.checklists ?? [],
+      attachments: editingActivity?.attachments ?? [],
+      labels: editingActivity?.labels ?? []
     };
 
     let updatedActivities: ProjectActivity[];

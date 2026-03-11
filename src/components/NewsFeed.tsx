@@ -391,7 +391,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({
       <Box>
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((item) => (
-            <Grid item xs={12} md={6} key={item}>
+            <Grid size={{ xs: 12, md: 6 }} key={item}>
               <Card>
                 <CardContent>
                   <Skeleton variant="text" width="80%" height={32} />

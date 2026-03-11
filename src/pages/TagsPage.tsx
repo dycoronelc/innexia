@@ -83,7 +83,7 @@ const TagsPage: React.FC = () => {
       if (response.status === 'success') {
         console.log('Tags data:', response.data);
         // Asegurarnos de que las fechas se manejen correctamente
-        const processedData = (response.data || []).map(tag => ({
+        const processedData = (response.data || []).map((tag: { created_at?: string | null; updated_at?: string | null; [key: string]: unknown }) => ({
           ...tag,
           created_at: tag.created_at || null,
           updated_at: tag.updated_at || null
@@ -132,7 +132,6 @@ const TagsPage: React.FC = () => {
     setFormData({
       name: '',
       description: '',
-      category: '',
       color: '#1976d2',
       active: true
     });
