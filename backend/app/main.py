@@ -11,6 +11,7 @@ configure_logging()
 from .config import settings
 from .api import auth, users, projects, activities, business_model_canvas, documents, masters, company, audit_log, activity_trello, chatbot, guided_conversation, educational_content, official_documents, agent_memory, proactive_suggestions, data_analysis, conversation_state, business_interview, hybrid_chatbot, news_feed, project_agent_output
 from .database import engine, Base
+from sqlalchemy import text
 
 # Crear tablas
 # Base.metadata.create_all(bind=engine)
@@ -84,6 +85,16 @@ app.include_router(project_agent_output.router, prefix="/api", tags=["Agent Outp
 @app.on_event("startup")
 async def startup_log():
     print("CORS allow_origins:", settings.CORS_ORIGINS)
+    # Verificar conexión a la base de datos (host y nombre para confirmar que es GoDaddy/producción)
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        print(
+            "BD conectada correctamente: host=%s port=%s database=%s"
+            % (settings.DB_HOST, settings.DB_PORT, settings.DB_NAME)
+        )
+    except Exception as e:
+        print("BD: error al verificar conexión: %s" % e)
 
 @app.get("/")
 async def root():

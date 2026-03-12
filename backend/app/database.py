@@ -1,7 +1,10 @@
-from sqlalchemy import create_engine
+import logging
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
+
+logger = logging.getLogger(__name__)
 
 # Configuración de la base de datos - SQLite para desarrollo, MySQL para producción
 import os
@@ -20,10 +23,17 @@ try:
     connection.close()
     # Si llegamos aquí, MySQL está disponible
     SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+    logger.info(
+        "Conexión MySQL OK: host=%s port=%s database=%s (conexión inicial correcta)",
+        settings.DB_HOST,
+        settings.DB_PORT,
+        settings.DB_NAME,
+    )
     print("Usando MySQL como base de datos")
 except Exception as e:
     # MySQL no está disponible, usar SQLite
     SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+    logger.warning("MySQL no disponible: %s. Usando SQLite.", e)
     print(f"MySQL no disponible ({e}), usando SQLite temporalmente")
 
 # Crear el motor de la base de datos
