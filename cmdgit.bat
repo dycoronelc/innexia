@@ -14,4 +14,3 @@ git push origin main
 
 echo.
 echo Commit realizado con el mensaje: %~1
-pause

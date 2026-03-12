@@ -64,11 +64,8 @@ const getAuthHeaders = (token: string, isFormData: boolean = false): HeadersInit
   };
 };
 
-// Endpoints que pueden devolver 401 por credenciales incorrectas: no redirigir "sesión expirada"
-const AUTH_CREDENTIAL_ENDPOINTS = ['/api/auth/login', '/api/auth/login-company', '/api/auth/register'];
-
-// Función para manejar respuestas de la API
-const handleResponse = async <T>(response: Response, requestEndpoint: string = ''): Promise<ApiResponse<T>> => {
+// Función para manejar respuestas de la API (nunca hace redirect; la UI decide qué hacer con 401)
+const handleResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
   try {
     const contentType = response.headers.get('content-type');
     const hasJsonContent = contentType && contentType.includes('application/json');
@@ -88,24 +85,6 @@ const handleResponse = async <T>(response: Response, requestEndpoint: string = '
         status: 'success',
         message: data?.message || 'Operación exitosa'
       };
-    }
-    // 401: solo redirigir "sesión expirada" si NO es login/register (credenciales incorrectas)
-    if (response.status === 401) {
-      const isCredentialEndpoint = AUTH_CREDENTIAL_ENDPOINTS.some((e) =>
-        requestEndpoint.includes(e)
-      );
-      if (!isCredentialEndpoint && typeof window !== 'undefined') {
-        const TOKEN_KEY = import.meta.env.VITE_JWT_STORAGE_KEY || 'innexia_token';
-        const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY || 'innexia_refresh_token';
-        const USER_KEY = import.meta.env.VITE_USER_STORAGE_KEY || 'innexia_user';
-        const COMPANY_KEY = 'innexia_company';
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(COMPANY_KEY);
-        const message = 'Su sesión ha expirado por inactividad. Por favor, inicie sesión nuevamente.';
-        window.location.replace(`/login?message=${encodeURIComponent(message)}&type=session_expired`);
-      }
     }
     return {
       status: 'error',
@@ -151,7 +130,7 @@ export const apiRequest = async <T>(
     });
     
     clearTimeout(timeoutId);
-    return await handleResponse<T>(response, url);
+    return await handleResponse<T>(response);
     
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
