@@ -113,7 +113,8 @@ Todos los valores `DB_*` deben coincidir con los de tu MySQL en GoDaddy.
 ### 4.2 Build & Start
 
 - **Build Command**:  
-  `npm ci && npm run build`
+  `npm run build:railway`  
+  (Ese script borra `node_modules/.vite` antes de `npm ci` para evitar el error EBUSY en Railway. Si prefieres el comando directo: `node scripts/clean-vite-cache.cjs && npm ci && npm run build`.)
 
 - **Start Command**:  
   `npx serve -s dist -l $PORT`  

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/write-config.cjs && tsc -b && vite build",
+    "build:railway": "node scripts/clean-vite-cache.cjs && npm ci && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
