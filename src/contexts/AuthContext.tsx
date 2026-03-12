@@ -86,14 +86,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Interceptar respuestas 401 globalmente
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
+      const requestUrl = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : '');
       const response = await originalFetch(...args);
       
-      // Si la respuesta es 401 y estamos autenticados, manejar token expirado
-      if (response.status === 401 && isAuthenticated) {
-        // Limpiar datos de autenticación
+      // 401 en login/register = credenciales incorrectas: no redirigir, que la página muestre el error
+      const isAuthEndpoint = /\/api\/auth\/(login|login-company|register)/i.test(requestUrl);
+      if (response.status === 401 && isAuthenticated && !isAuthEndpoint) {
         clearAuthData();
-        
-        // Redirigir al login con mensaje
         const message = 'Su sesión ha expirado por inactividad. Por favor, inicie sesión nuevamente.';
         window.location.replace(`/login?message=${encodeURIComponent(message)}&type=session_expired`);
       }
