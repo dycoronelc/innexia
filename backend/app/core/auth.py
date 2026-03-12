@@ -50,10 +50,20 @@ def _truncate_password_72_bytes(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verificar contraseña en texto plano contra hash"""
-    plain_password = _truncate_password_72_bytes(plain_password)
+    if not hashed_password or not isinstance(hashed_password, str):
+        return False
+    # Hash bcrypt válido tiene 60 caracteres y empieza por $2b$ o $2a$
+    if not hashed_password.startswith(("$2b$", "$2a$")) or len(hashed_password) < 60:
+        import logging
+        logging.getLogger(__name__).warning("verify_password: hash inválido (len=%s, inicio=%r)", len(hashed_password or ""), (hashed_password or "")[:20])
+        return False
+    plain_password = _truncate_password_72_bytes(plain_password or "")
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message=".*bcrypt.*", category=UserWarning)
-        return pwd_context.verify(plain_password, hashed_password)
+        try:
+            return pwd_context.verify(plain_password, hashed_password)
+        except ValueError:
+            return False
 
 def get_password_hash(password: str) -> str:
     """Generar hash de contraseña"""

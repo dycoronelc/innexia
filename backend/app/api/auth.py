@@ -14,7 +14,8 @@ from ..core.auth import (
     get_current_user,
     get_current_active_user,
     get_current_user_with_company,
-    get_user_company_id
+    get_user_company_id,
+    _truncate_password_72_bytes,
 )
 from ..database import get_db
 from ..models.user import User
@@ -228,8 +229,14 @@ async def login_user_with_company(
             detail="Nombre de usuario o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Asegurar que la contraseña no supere 72 bytes (límite de bcrypt) antes de verificar
+    raw_password = user_data.password if user_data.password is not None else ""
+    if not isinstance(raw_password, str):
+        raw_password = str(raw_password)
+    password_to_verify = _truncate_password_72_bytes(raw_password)
+    logger.info("login-company: password len(chars)=%s len(bytes)=%s", len(raw_password), len(raw_password.encode("utf-8")))
     try:
-        if not verify_password(user_data.password or "", user.hashed_password or ""):
+        if not verify_password(password_to_verify, user.hashed_password or ""):
             logger.warning("login-company: contraseña incorrecta para username=%r", username)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
