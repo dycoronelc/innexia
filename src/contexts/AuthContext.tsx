@@ -79,38 +79,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  // Manejar expiración de tokens globalmente
-  useEffect(() => {
-    if (!isAuthenticated || !token) return;
-
-    // Interceptar respuestas 401 globalmente
-    const originalFetch = window.fetch;
-    window.fetch = async (...args) => {
-      const requestUrl = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : '');
-      const response = await originalFetch(...args);
-      
-      // No redirigir "sesión expirada" si: es login/register (credenciales incorrectas) o ya estamos en /login
-      const isAuthEndpoint = /\/api\/auth\/(login|login-company|register)/i.test(requestUrl);
-      const isLoginPage = typeof window !== 'undefined' && /^\/login\/?$/.test(window.location.pathname);
-      if (
-        response.status === 401 &&
-        isAuthenticated &&
-        !isAuthEndpoint &&
-        !isLoginPage
-      ) {
-        clearAuthData();
-        const message = 'Su sesión ha expirado por inactividad. Por favor, inicie sesión nuevamente.';
-        window.location.replace(`/login?message=${encodeURIComponent(message)}&type=session_expired`);
-      }
-      
-      return response;
-    };
-
-    // Cleanup: restaurar fetch original
-    return () => {
-      window.fetch = originalFetch;
-    };
-  }, [isAuthenticated, token]);
+  // El redirect por 401 "sesión expirada" se hace solo en api.ts (handleResponse), que conoce
+  // la URL de la petición y no redirige cuando es login/register.
 
   const checkAuthStatus = async () => {
     try {
