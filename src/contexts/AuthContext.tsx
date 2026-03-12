@@ -89,9 +89,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const requestUrl = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : '');
       const response = await originalFetch(...args);
       
-      // 401 en login/register = credenciales incorrectas: no redirigir, que la página muestre el error
+      // No redirigir "sesión expirada" si: es login/register (credenciales incorrectas) o ya estamos en /login
       const isAuthEndpoint = /\/api\/auth\/(login|login-company|register)/i.test(requestUrl);
-      if (response.status === 401 && isAuthenticated && !isAuthEndpoint) {
+      const isLoginPage = typeof window !== 'undefined' && /^\/login\/?$/.test(window.location.pathname);
+      if (
+        response.status === 401 &&
+        isAuthenticated &&
+        !isAuthEndpoint &&
+        !isLoginPage
+      ) {
         clearAuthData();
         const message = 'Su sesión ha expirado por inactividad. Por favor, inicie sesión nuevamente.';
         window.location.replace(`/login?message=${encodeURIComponent(message)}&type=session_expired`);

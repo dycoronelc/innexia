@@ -56,7 +56,9 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setError('');
+    setSessionExpiredMessage(''); // limpiar mensaje de sesión expirada al reintentar
     setLoading(true);
 
     try {
