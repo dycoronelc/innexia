@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -23,6 +24,7 @@ from ..schemas.user import UserCreate, User as UserSchema, UserLogin
 from ..schemas.token import Token, RefreshToken
 from ..config import settings
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
@@ -216,24 +218,29 @@ async def login_user_with_company(
     db: Session = Depends(get_db)
 ):
     """Iniciar sesión de usuario con validación de empresa"""
-    
+    username = (user_data.username or "").strip()
     # Buscar usuario por username
-    user = db.query(User).filter(User.username == user_data.username).first()
+    user = db.query(User).filter(User.username == username).first()
     if not user:
+        logger.warning("login-company: usuario no encontrado username=%r", username)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nombre de usuario o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
     try:
-        if not verify_password(user_data.password, user.hashed_password):
+        if not verify_password(user_data.password or "", user.hashed_password or ""):
+            logger.warning("login-company: contraseña incorrecta para username=%r", username)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Nombre de usuario o contraseña incorrectos",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    except (ValueError, Exception):
-        # bcrypt/passlib puede lanzar ValueError (ej. password > 72 bytes); no exponer 500
+    except HTTPException:
+        raise
+    except (ValueError, Exception) as e:
+        # bcrypt/passlib puede lanzar; registrar causa real sin exponer al cliente
+        logger.warning("login-company: excepción al verificar contraseña username=%r tipo=%s msg=%s", username, type(e).__name__, str(e))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nombre de usuario o contraseña incorrectos",
