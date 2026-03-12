@@ -234,9 +234,11 @@ async def login_user_with_company(
     if not isinstance(raw_password, str):
         raw_password = str(raw_password)
     password_to_verify = _truncate_password_72_bytes(raw_password)
-    # Usar hash sin espacios por si la BD devolvió espacios
     logger.info("login-company: password len(chars)=%s len(bytes)=%s", len(raw_password), len(raw_password.encode("utf-8")))
-    stored_hash = (user.hashed_password or "").strip()
+    raw_hash = user.hashed_password or ""
+    if isinstance(raw_hash, bytes):
+        raw_hash = raw_hash.decode("utf-8", errors="replace")
+    stored_hash = raw_hash.strip()
     logger.info("login-company: hash desde BD len=%s inicio=%r", len(stored_hash), stored_hash[:14] if len(stored_hash) >= 14 else stored_hash)
     try:
         if not verify_password(password_to_verify, stored_hash):

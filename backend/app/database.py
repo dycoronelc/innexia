@@ -12,17 +12,18 @@ import os
 # Verificar si MySQL está disponible, si no usar SQLite
 try:
     import pymysql
-    # Intentar conectar a MySQL
+    # Intentar conectar a MySQL (charset=utf8mb4 para que el hash bcrypt se lea igual que en la BD)
     connection = pymysql.connect(
         host=settings.DB_HOST,
         port=settings.DB_PORT,
         user=settings.DB_USER,
         password=settings.DB_PASSWORD,
-        database=settings.DB_NAME
+        database=settings.DB_NAME,
+        charset="utf8mb4",
     )
     connection.close()
     # Si llegamos aquí, MySQL está disponible
-    SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+    SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}?charset=utf8mb4"
     logger.info(
         "Conexión MySQL OK: host=%s port=%s database=%s (conexión inicial correcta)",
         settings.DB_HOST,
