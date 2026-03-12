@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // Caché fuera de node_modules para evitar EBUSY en entornos tipo Railway (npm ci no bloquea .vite)
+  cacheDir: '.vite',
   server: {
     port: 3000,
     open: true,
