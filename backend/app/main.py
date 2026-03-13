@@ -10,7 +10,9 @@ configure_logging()
 
 from .config import settings
 from .api import auth, users, projects, activities, business_model_canvas, documents, masters, company, audit_log, activity_trello, chatbot, guided_conversation, educational_content, official_documents, agent_memory, proactive_suggestions, data_analysis, conversation_state, business_interview, hybrid_chatbot, news_feed, project_agent_output
-from .database import engine, Base
+from .database import engine, Base, SessionLocal
+from .models.user import User
+from .core.auth import get_password_hash
 from sqlalchemy import text
 
 # Crear tablas
@@ -95,6 +97,33 @@ async def startup_log():
         )
     except Exception as e:
         print("BD: error al verificar conexión: %s" % e)
+
+    # Reset temporal de contraseña desde variables de entorno.
+    # Usar solo para soporte/bootstrap y luego eliminar las variables.
+    reset_password = os.getenv("ADMIN_RESET_PASSWORD", "").strip()
+    reset_username = os.getenv("ADMIN_RESET_USERNAME", "admin").strip() or "admin"
+    if reset_password:
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.username == reset_username).first()
+            if user:
+                user.hashed_password = get_password_hash(reset_password)
+                user.active = True
+                db.commit()
+                print(
+                    "ADMIN_RESET_PASSWORD aplicado correctamente para username=%s en database=%s"
+                    % (reset_username, settings.DB_NAME)
+                )
+            else:
+                print(
+                    "ADMIN_RESET_PASSWORD no aplicado: no existe username=%s en database=%s"
+                    % (reset_username, settings.DB_NAME)
+                )
+        except Exception as e:
+            db.rollback()
+            print("ADMIN_RESET_PASSWORD error: %s" % e)
+        finally:
+            db.close()
 
 @app.get("/")
 async def root():

@@ -1,4 +1,5 @@
 import logging
+import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -243,6 +244,8 @@ async def login_user_with_company(
     try:
         if not verify_password(password_to_verify, stored_hash):
             logger.warning("login-company: contraseña incorrecta para username=%r", username)
+            if os.environ.get("DEBUG_LOG_LOGIN_HASH") == "1":
+                logger.warning("DEBUG_LOG_LOGIN_HASH: hash completo que leyó el backend (cópialo y pruébalo con scripts/verify_hash.py): %s", stored_hash)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Nombre de usuario o contraseña incorrectos",
