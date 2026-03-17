@@ -1,0 +1,205 @@
+{
+  "name": "IASE_v5_SW_Supervisor_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "55140307-6b3b-427a-b493-1a4acc173330",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el Supervisor Agent del sistema Innexia AI Strategic Analysis Engine v5.\n\n# Objetivo\nTu función es analizar el input del proyecto, normalizarlo, determinar el perfil estratégico de la iniciativa, identificar prioridades de análisis y preparar un context bundle estructurado para que otros sub-agentes especializados ejecuten los módulos de:\n- BMC\n- Strategy\n- Roadmap\n- Finance\n- Risks\n- Verdict\n- Activities\n\n# Instrucciones clave\n- No debes desarrollar el análisis completo de cada módulo.\n- No debes redactar explicaciones largas.\n- Debes sintetizar el contexto y definir un plan de ejecución claro.\n- Debes identificar dependencias lógicas entre módulos.\n- Debes inferir supuestos razonables si faltan datos.\n- Debes responder únicamente en JSON válido.\n- No incluyas markdown.\n- No incluyas comentarios.\n- No incluyas texto fuera del JSON.\n\n# Criterios\nEvalúa:\n- tipo de iniciativa\n- nivel de madurez\n- complejidad\n- áreas críticas\n- dependencias entre módulos\n- usuarios objetivo\n- propuesta de valor central\n- riesgos preliminares\n- enfoque de ejecución sugerido\n\n# Formato de salida requerido\n{\n  \"project_profile\": {\n    \"project_type\": \"\",\n    \"strategic_maturity\": \"\",\n    \"complexity\": \"\",\n    \"confidence\": 0\n  },\n  \"execution_plan\": {\n    \"run_bmc\": true,\n    \"run_strategy\": true,\n    \"run_roadmap\": true,\n    \"run_finance\": true,\n    \"run_risks\": true,\n    \"run_verdict\": true,\n    \"run_activities\": true\n  },\n  \"context_bundle\": {\n    \"normalized_problem\": \"\",\n    \"objective\": \"\",\n    \"target_users\": [],\n    \"core_value_hypothesis\": \"\",\n    \"key_constraints\": [],\n    \"assumptions\": []\n  },\n  \"dependencies\": [],\n  \"priority_focus_areas\": [],\n  \"preliminary_risks\": []\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    project_profile: {\n      type: \"object\",\n      properties: {\n        project_type: { type: \"string\" },\n        strategic_maturity: { type: \"string\" },\n        complexity: { type: \"string\" },\n        confidence: { type: \"number\" }\n      },\n      required: [\"project_type\", \"strategic_maturity\", \"complexity\", \"confidence\"]\n    },\n    execution_plan: {\n      type: \"object\",\n      properties: {\n        run_bmc: { type: \"boolean\" },\n        run_strategy: { type: \"boolean\" },\n        run_roadmap: { type: \"boolean\" },\n        run_finance: { type: \"boolean\" },\n        run_risks: { type: \"boolean\" },\n        run_verdict: { type: \"boolean\" },\n        run_activities: { type: \"boolean\" }\n      },\n      required: [\"run_bmc\", \"run_strategy\", \"run_roadmap\", \"run_finance\", \"run_risks\", \"run_verdict\", \"run_activities\"]\n    },\n    context_bundle: {\n      type: \"object\",\n      properties: {\n        normalized_problem: { type: \"string\" },\n        objective: { type: \"string\" },\n        target_users: { type: \"array\", items: { type: \"string\" } },\n        core_value_hypothesis: { type: \"string\" },\n        key_constraints: { type: \"array\", items: { type: \"string\" } },\n        assumptions: { type: \"array\", items: { type: \"string\" } }\n      },\n      required: [\"normalized_problem\", \"objective\", \"target_users\", \"core_value_hypothesis\", \"key_constraints\", \"assumptions\"]\n    },\n    dependencies: { type: \"array\", items: { type: \"string\" } },\n    priority_focus_areas: { type: \"array\", items: { type: \"string\" } },\n    preliminary_risks: { type: \"array\", items: { type: \"string\" } }\n  },\n  required: [\"project_profile\", \"execution_plan\", \"context_bundle\", \"dependencies\", \"priority_focus_areas\", \"preliminary_risks\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "dc09494f-29e3-4503-b6c2-2552b9b08bba",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "d0b5e4b3-ea88-4fd0-82a1-55424c7657bd",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -512,
+        2640
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.project_profile = content.project_profile || {};\ncontent.project_profile.project_type = content.project_profile.project_type || \"\";\ncontent.project_profile.strategic_maturity = content.project_profile.strategic_maturity || \"\";\ncontent.project_profile.complexity = content.project_profile.complexity || \"\";\ncontent.project_profile.confidence =\n  typeof content.project_profile.confidence === 'number'\n    ? content.project_profile.confidence\n    : 0;\n\ncontent.execution_plan = content.execution_plan || {};\ncontent.execution_plan.run_bmc = typeof content.execution_plan.run_bmc === 'boolean' ? content.execution_plan.run_bmc : true;\ncontent.execution_plan.run_strategy = typeof content.execution_plan.run_strategy === 'boolean' ? content.execution_plan.run_strategy : true;\ncontent.execution_plan.run_roadmap = typeof content.execution_plan.run_roadmap === 'boolean' ? content.execution_plan.run_roadmap : true;\ncontent.execution_plan.run_finance = typeof content.execution_plan.run_finance === 'boolean' ? content.execution_plan.run_finance : true;\ncontent.execution_plan.run_risks = typeof content.execution_plan.run_risks === 'boolean' ? content.execution_plan.run_risks : true;\ncontent.execution_plan.run_verdict = typeof content.execution_plan.run_verdict === 'boolean' ? content.execution_plan.run_verdict : true;\ncontent.execution_plan.run_activities = typeof content.execution_plan.run_activities === 'boolean' ? content.execution_plan.run_activities : true;\n\ncontent.context_bundle = content.context_bundle || {};\ncontent.context_bundle.normalized_problem = content.context_bundle.normalized_problem || \"\";\ncontent.context_bundle.objective = content.context_bundle.objective || \"\";\ncontent.context_bundle.target_users = Array.isArray(content.context_bundle.target_users) ? content.context_bundle.target_users : [];\ncontent.context_bundle.core_value_hypothesis = content.context_bundle.core_value_hypothesis || \"\";\ncontent.context_bundle.key_constraints = Array.isArray(content.context_bundle.key_constraints) ? content.context_bundle.key_constraints : [];\ncontent.context_bundle.assumptions = Array.isArray(content.context_bundle.assumptions) ? content.context_bundle.assumptions : [];\n\ncontent.dependencies = Array.isArray(content.dependencies) ? content.dependencies : [];\ncontent.priority_focus_areas = Array.isArray(content.priority_focus_areas) ? content.priority_focus_areas : [];\ncontent.preliminary_risks = Array.isArray(content.preliminary_risks) ? content.preliminary_risks : [];\n\nreturn [{ json: content }];"
+      },
+      "id": "15c16a6f-d499-42d9-b30c-f9c0344073c4",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!data.project_profile || typeof data.project_profile !== 'object') {\n  throw new Error('project_profile faltante o inválido');\n}\n\nif (!data.execution_plan || typeof data.execution_plan !== 'object') {\n  throw new Error('execution_plan faltante o inválido');\n}\n\nif (!data.context_bundle || typeof data.context_bundle !== 'object') {\n  throw new Error('context_bundle faltante o inválido');\n}\n\nif (!Array.isArray(data.dependencies)) {\n  throw new Error('dependencies faltante o inválido');\n}\n\nif (!Array.isArray(data.priority_focus_areas)) {\n  throw new Error('priority_focus_areas faltante o inválido');\n}\n\nif (!Array.isArray(data.preliminary_risks)) {\n  throw new Error('preliminary_risks faltante o inválido');\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "b007526c-0d9d-4971-9085-c23b67e5b7fa",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "e40e560b-f290-4e48-a967-d28f379cb3c0",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -512,
+        2416
+      ],
+      "id": "3161583e-65f3-437e-9319-914142fb4e5e",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d99ba3c4-ab8d-4627-b8cd-ab67055086c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "Q7QcChf3BaLn0Ied",
+  "tags": [
+    {
+      "updatedAt": "2026-03-16T16:03:55.832Z",
+      "createdAt": "2026-03-16T16:03:55.832Z",
+      "id": "6cCbyqLdGbVhze1s",
+      "name": "v5.3.1"
+    },
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

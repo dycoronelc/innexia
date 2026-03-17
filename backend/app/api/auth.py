@@ -1,5 +1,3 @@
-import logging
-import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -16,7 +14,6 @@ from ..core.auth import (
     get_current_active_user,
     get_current_user_with_company,
     get_user_company_id,
-    _truncate_password_72_bytes,
 )
 from ..database import get_db
 from ..models.user import User
@@ -26,7 +23,6 @@ from ..schemas.user import UserCreate, User as UserSchema, UserLogin
 from ..schemas.token import Token, RefreshToken
 from ..config import settings
 
-logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
@@ -224,28 +220,13 @@ async def login_user_with_company(
     # Buscar usuario por username
     user = db.query(User).filter(User.username == username).first()
     if not user:
-        logger.warning("login-company: usuario no encontrado username=%r", username)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nombre de usuario o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    # Asegurar que la contraseña no supere 72 bytes (límite de bcrypt) antes de verificar
-    raw_password = user_data.password if user_data.password is not None else ""
-    if not isinstance(raw_password, str):
-        raw_password = str(raw_password)
-    password_to_verify = _truncate_password_72_bytes(raw_password)
-    logger.info("login-company: password len(chars)=%s len(bytes)=%s", len(raw_password), len(raw_password.encode("utf-8")))
-    raw_hash = user.hashed_password or ""
-    if isinstance(raw_hash, bytes):
-        raw_hash = raw_hash.decode("utf-8", errors="replace")
-    stored_hash = raw_hash.strip()
-    logger.info("login-company: hash desde BD len=%s inicio=%r", len(stored_hash), stored_hash[:14] if len(stored_hash) >= 14 else stored_hash)
     try:
-        if not verify_password(password_to_verify, stored_hash):
-            logger.warning("login-company: contraseña incorrecta para username=%r", username)
-            if os.environ.get("DEBUG_LOG_LOGIN_HASH") == "1":
-                logger.warning("DEBUG_LOG_LOGIN_HASH: hash completo que leyó el backend (cópialo y pruébalo con scripts/verify_hash.py): %s", stored_hash)
+        if not verify_password(user_data.password or "", user.hashed_password or ""):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Nombre de usuario o contraseña incorrectos",
@@ -253,9 +234,7 @@ async def login_user_with_company(
             )
     except HTTPException:
         raise
-    except (ValueError, Exception) as e:
-        # bcrypt/passlib puede lanzar; registrar causa real sin exponer al cliente
-        logger.warning("login-company: excepción al verificar contraseña username=%r tipo=%s msg=%s", username, type(e).__name__, str(e))
+    except (ValueError, Exception):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nombre de usuario o contraseña incorrectos",

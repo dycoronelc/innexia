@@ -1,0 +1,238 @@
+{
+  "name": "IASE_v5_SW_Risks_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f236bbd5-b4d5-4024-8908-b453f5f96cbb",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el Risks Agent del sistema Innexia AI Strategic Analysis Engine v5.\n\n# Objetivo\nIdentificar y estructurar los principales riesgos del proyecto.\n\n# Instrucciones\n- Incluye riesgos técnicos, operativos, financieros, de adopción, seguridad y dependencia externa.\n- Asigna probabilidad e impacto.\n- Incluye mitigación y owner sugerido.\n- No expliques tu razonamiento.\n- Devuelve únicamente JSON válido.\n\n# Formato de salida\n{\n  \"risks\": [\n    {\n      \"risk_id\": \"R1\",\n      \"title\": \"\",\n      \"category\": \"\",\n      \"probability\": \"baja\",\n      \"impact\": \"medio\",\n      \"mitigation\": \"\",\n      \"owner\": \"\"\n    }\n  ]\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    risks: {\n      type: \"array\",\n      items: {\n        type: \"object\",\n        properties: {\n          risk_id: { type: \"string\" },\n          title: { type: \"string\" },\n          category: { type: \"string\" },\n          probability: { type: \"string\" },\n          impact: { type: \"string\" },\n          mitigation: { type: \"string\" },\n          owner: { type: \"string\" }\n        },\n        required: [\"risk_id\", \"title\", \"category\", \"probability\", \"impact\", \"mitigation\", \"owner\"]\n      }\n    }\n  },\n  required: [\"risks\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "c73fd380-669f-4a7c-9662-eb6af4b424af",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "009fd4b2-559c-4a98-ba97-9d98c89d92d7",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        1392
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Search the web with Tavily for fresh market, technology, vendor, regulatory, and benchmarking context when the project input would benefit from external validation. Prefer concise, relevant searches in Spanish or English depending on the input.",
+        "query": "$fromAI(\"search_query\", \"Consulta de búsqueda Tavily\", \"string\")",
+        "options": {
+          "topic": "general",
+          "search_depth": "advanced",
+          "max_results": 5,
+          "include_answer": "advanced",
+          "include_raw_content": false
+        }
+      },
+      "id": "841c6904-f0f7-495d-a188-468f8c850f92",
+      "name": "Tavily Web Search",
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        448,
+        1392
+      ],
+      "credentials": {
+        "tavilyApi": {
+          "id": "xcIywbCiXQk2Iroa",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.risks = Array.isArray(content.risks) ? content.risks : [];\ncontent.risks = content.risks.map((r, idx) => ({\n  risk_id: r?.risk_id || `R${idx + 1}`,\n  title: r?.title || `Riesgo ${idx + 1}`,\n  category: r?.category || \"\",\n  probability: r?.probability || \"media\",\n  impact: r?.impact || \"medio\",\n  mitigation: r?.mitigation || \"\",\n  owner: r?.owner || \"\"\n}));\n\nreturn [{ json: content }];"
+      },
+      "id": "96d5b110-24de-409b-819f-636194cee0ee",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!Array.isArray(data.risks)) {\n  throw new Error('risks faltante o inválido');\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "c7987bf5-75de-45af-bf4e-55d05b669a88",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "6e62252b-f61c-4b1d-84a9-dd4c88573686",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        256,
+        1168
+      ],
+      "id": "481e5cad-0b3a-46ab-ba39-06fdc37e0b34",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily Web Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9af6ade1-db17-4b5e-8ab4-191c9903fb6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "UAWNZ5kZ7uzsFFZO",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

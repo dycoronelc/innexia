@@ -1,0 +1,199 @@
+{
+  "name": "IASE_v5_SW_Activities_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3bdfb7c6-e613-4187-924f-005d3a64f85f",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el Activities Agent del sistema Innexia AI Strategic Analysis Engine v5.\n\n# Objetivo\nConvertir el roadmap y el veredicto en un backlog ejecutable orientado a Kanban y Gantt.\n\n# Instrucciones\n- Genera actividades concretas, no abstractas.\n- Cada actividad debe tener épica, prioridad, owner_role, duración estimada, dependencia y phase_id.\n- Las actividades deben ser útiles para ejecución real.\n- Usa estados kanban iniciales apropiados.\n- No expliques tu razonamiento.\n- Devuelve únicamente JSON válido.\n\n# Formato de salida\n{\n  \"activities\": [\n    {\n      \"activity_id\": \"A1\",\n      \"epic\": \"\",\n      \"title\": \"\",\n      \"description\": \"\",\n      \"priority\": \"alta\",\n      \"owner_role\": \"\",\n      \"estimated_days\": 0,\n      \"depends_on\": [],\n      \"kanban_status\": \"todo\",\n      \"phase_id\": \"P1\"\n    }\n  ]\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    activities: {\n      type: \"array\",\n      items: {\n        type: \"object\",\n        properties: {\n          activity_id: { type: \"string\" },\n          epic: { type: \"string\" },\n          title: { type: \"string\" },\n          description: { type: \"string\" },\n          priority: { type: \"string\" },\n          owner_role: { type: \"string\" },\n          estimated_days: { type: \"number\" },\n          depends_on: { type: \"array\", items: { type: \"string\" } },\n          kanban_status: { type: \"string\" },\n          phase_id: { type: \"string\" }\n        },\n        required: [\"activity_id\", \"epic\", \"title\", \"description\", \"priority\", \"owner_role\", \"estimated_days\", \"depends_on\", \"kanban_status\", \"phase_id\"]\n      }\n    }\n  },\n  required: [\"activities\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "6b25a04d-dbb9-416a-aa30-ce9aa0dc6a19",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "4e23b505-2f64-4c55-ab67-946b1a636a6e",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        1280
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.activities = Array.isArray(content.activities) ? content.activities : [];\ncontent.activities = content.activities.map((a, idx) => ({\n  activity_id: a?.activity_id || `A${idx + 1}`,\n  epic: a?.epic || \"\",\n  title: a?.title || `Actividad ${idx + 1}`,\n  description: a?.description || \"\",\n  priority: a?.priority || \"media\",\n  owner_role: a?.owner_role || \"\",\n  estimated_days: Number(a?.estimated_days || 0),\n  depends_on: Array.isArray(a?.depends_on) ? a.depends_on : [],\n  kanban_status: a?.kanban_status || \"todo\",\n  phase_id: a?.phase_id || \"\"\n}));\n\nreturn [{ json: content }];"
+      },
+      "id": "71c4fca9-3ae0-4591-8b29-98bde139a502",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!Array.isArray(data.activities)) {\n  throw new Error('activities faltante o inválido');\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "c177273b-0b7e-45c6-bb4d-ca4658e4909a",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "28faa9b9-9779-439f-a681-b29db07e1c91",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        1072
+      ],
+      "id": "60d3bc02-0fd0-4a5c-b3df-31ffade44f67",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "771137d6-ba95-4d0f-8381-d19d17d9a71f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "BMIdtMDH9s4aS1PP",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

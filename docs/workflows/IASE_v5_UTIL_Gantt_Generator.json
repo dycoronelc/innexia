@@ -1,0 +1,86 @@
+{
+  "name": "IASE_v5_UTIL_Gantt_Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e27d41a4-3da2-465d-a8c7-a3daedf7f6e1",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const activities = $json.activities?.activities || $json.activities || [];\nconst baseDate = new Date(($json.gantt?.project_start || new Date().toISOString().split('T')[0]));\nfunction addDays(date, days) {\n  const d = new Date(date);\n  d.setDate(d.getDate() + days);\n  return d;\n}\nfunction toISODate(date) {\n  return date.toISOString().split('T')[0];\n}\nlet current = new Date(baseDate);\nconst tasks = activities.map(a => {\n  const start = new Date(current);\n  const end = addDays(start, Math.max(1, a.estimated_days || 1));\n  current = addDays(end, 1);\n  return {\n    id: a.activity_id,\n    name: a.title,\n    start: toISODate(start),\n    end: toISODate(end),\n    progress: 0,\n    dependencies: a.depends_on || [],\n    phase_id: a.phase_id\n  };\n});\nreturn [{ json: { ...$json, gantt: { project_start: toISODate(baseDate), tasks } } }];"
+      },
+      "id": "711238da-2e6c-468d-b957-af32a02c89e4",
+      "name": "Generate Gantt JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "bfe37016-d20c-4e77-927f-014d297a55ed",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2512,
+        608
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Generate Gantt JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Gantt JSON": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e47f6a07-d90d-4179-98df-013622a103e8",
+  "meta": {
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "llAiDnhbzdZ00G9z",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

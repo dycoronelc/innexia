@@ -55,6 +55,13 @@ class Settings:
     # Configuración de IA
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
+    N8N_STRATEGY_ENGINE_WEBHOOK_URL = os.getenv("N8N_STRATEGY_ENGINE_WEBHOOK_URL", "").strip()
+    N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL", "").strip() or os.getenv("N8N_STRATEGY_ENGINE_WEBHOOK_URL", "").strip()
+    N8N_TIMEOUT_SECONDS = int(os.getenv("N8N_TIMEOUT_SECONDS", "180"))
+    N8N_WORKFLOW_VERSION = os.getenv("N8N_WORKFLOW_VERSION", "v5.2").strip()
+
+    # Chat gateway: token para callbacks desde n8n
+    CALLBACK_SHARED_TOKEN = os.getenv("CALLBACK_SHARED_TOKEN", "").strip()
 
 # Crear instancia de settings
 settings = Settings()

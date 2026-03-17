@@ -1,0 +1,137 @@
+{
+  "name": "IASE_v5_HTTP_WRAPPER_v2.3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "innexia-ai-strategic-analysis-v5-wrapper-v2-3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7d8f6b42-ff86-41aa-9d44-0999d3593c2d",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "de263794-c412-48e1-ae4e-f57c6d52a39d"
+    },
+    {
+      "parameters": {
+        "jsCode": "const src = $json.body ?? $json;\nconst callbackUrl = src.callback_url || src.meta?.callback_url || 'https://REPLACE_WITH_FASTAPI_HOST/api/v1/callbacks/strategy';\nreturn [{ json: { ...src, callback_url: callbackUrl, meta: { ...(src.meta || {}), workflow_version: src.meta?.workflow_version || 'v2.3-http-wrapper', source: src.meta?.source || 'strategy_engine_http_wrapper', created_at: src.meta?.created_at || new Date().toISOString() } } }];"
+      },
+      "id": "0a580e6f-3fd5-4497-a4d1-68cf8637a54e",
+      "name": "Normalize Wrapper Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "ZinZ5rS9LJPZZ0EV",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ZinZ5rS9LJPZZ0EV",
+          "cachedResultName": "IASE_v5_CORE_v2.3"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "request_id": "={{ $json.request_id }}",
+            "project_name": "={{ $json.project_name }}",
+            "analysis_type": "={{ $json.analysis_type }}",
+            "language": "={{ $json.language }}",
+            "organization": "={{ $json.organization }}",
+            "input_brief": "={{ $json.input_brief }}",
+            "execution_options": "={{ $json.execution_options }}",
+            "chat_context": "={{ $json.chat_context }}",
+            "meta": "={{ $json.meta }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "70e2dd03-8f57-4f58-bce7-cba09c46dbb2",
+      "name": "Execute Strategy Engine Core",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "15057f86-46c8-4f19-a086-6823e6eec6de",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Wrapper Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Wrapper Input": {
+      "main": [
+        [
+          {
+            "node": "Execute Strategy Engine Core",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Strategy Engine Core": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "67674486-6b8b-44ac-8750-a4963d27f99a",
+  "meta": {
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "wM0YCatLU3xfY1rG",
+  "tags": []
+}

@@ -1,0 +1,86 @@
+{
+  "name": "IASE_v5_2_UTIL_Consolidator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "249ec807-e766-48b0-9683-4db1a317b8d8",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\n// Datos base\nconst normalizedInput = input.input || input || {};\nconst supervisor = input.supervisor || {};\nconst marketData = input.market_analysis || {};\nconst bmcData = input.bmc || {};\nconst strategyData = input.strategy || {};\nconst financeData = input.finance || {};\nconst risksData = Array.isArray(input.risks) ? input.risks : [];\nconst roadmapData = input.roadmap || {};\nconst verdictData = input.verdict?.verdict || input.verdict || {};\nconst activitiesData = input.activities?.activities || input.activities || [];\nconst kanbanData = input.kanban || { columns: [], cards: [] };\nconst ganttData = input.gantt || { project_start: null, tasks: [] };\n\n// Summary\nconst summary = {\n  executive_summary:\n    verdictData?.executive_summary ||\n    \"Análisis estratégico generado por Innexia AI Strategy Engine.\",\n  key_findings: [],\n  priority_actions: []\n};\n\nif (Array.isArray(marketData?.opportunities) && marketData.opportunities.length) {\n  summary.key_findings.push(\n    `Se identificaron ${marketData.opportunities.length} oportunidades principales.`\n  );\n}\n\nif (Array.isArray(risksData) && risksData.length) {\n  summary.key_findings.push(\n    `Se identificaron ${risksData.length} riesgos relevantes.`\n  );\n}\n\nif (Array.isArray(activitiesData) && activitiesData.length) {\n  summary.priority_actions.push(\n    ...activitiesData\n      .slice(0, 5)\n      .map(a => a.title || a.activity_id)\n      .filter(Boolean)\n  );\n}\n\nconst consolidated = {\n  request_id: input.request_id || normalizedInput.request_id || null,\n  project_name: input.project_name || normalizedInput.project_name || null,\n  workflow_version: 'v5.3',\n  status: 'completed',\n  language: input.language || normalizedInput.language || 'es',\n  input: normalizedInput,\n  supervisor,\n  market_analysis: marketData,\n  bmc: bmcData,\n  strategy: strategyData,\n  finance: financeData,\n  risks: risksData,\n  roadmap: roadmapData,\n  verdict: verdictData,\n  activities: activitiesData,\n  kanban: kanbanData,\n  gantt: ganttData,\n  summary,\n  meta: {\n    created_at: normalizedInput?.meta?.created_at || input?.meta?.created_at || null,\n    completed_at: new Date().toISOString(),\n    modules_executed: Object.entries({\n      supervisor: !!supervisor && Object.keys(supervisor).length > 0,\n      market_intelligence: !!marketData && Object.keys(marketData).length > 0,\n      bmc: !!bmcData && Object.keys(bmcData).length > 0,\n      strategy: !!strategyData && Object.keys(strategyData).length > 0,\n      finance: !!financeData && Object.keys(financeData).length > 0,\n      risks: Array.isArray(risksData) && risksData.length > 0,\n      roadmap: !!roadmapData && Object.keys(roadmapData).length > 0,\n      verdict: !!verdictData && Object.keys(verdictData).length > 0,\n      activities: Array.isArray(activitiesData) && activitiesData.length > 0,\n      kanban: !!kanbanData && Object.keys(kanbanData).length > 0,\n      gantt: !!ganttData && Object.keys(ganttData).length > 0\n    })\n      .filter(([_, ran]) => ran)\n      .map(([name]) => name),\n    modules_failed: []\n  }\n};\n\nreturn [{ json: consolidated }];"
+      },
+      "id": "dd32d0ad-01c2-4965-96e1-e5c3d1d14cd1",
+      "name": "Consolidate Final JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "3704ed8e-4548-4671-98ed-73bc7655876d",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2496,
+        528
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Final JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidate Final JSON": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "87c3a2ce-bbd0-4310-b8ef-d89abc33c192",
+  "meta": {
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "IOCbQoJMPZPMIDEr",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

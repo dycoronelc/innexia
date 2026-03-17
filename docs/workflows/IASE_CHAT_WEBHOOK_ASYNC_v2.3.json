@@ -1,0 +1,708 @@
+{
+  "name": "IASE_CHAT_WEBHOOK_ASYNC_v2.3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "innexia-chat-submit-async-v2-3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "31a2866b-03f6-4497-be37-a2986055abb4",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2160,
+        112
+      ],
+      "webhookId": "cab6376f-abe9-4e00-956b-6a91569d202b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const src = $json.body ?? $json;\nfunction generateRequestId() { const ts = Date.now().toString(36); const rnd = Math.random().toString(36).slice(2, 10); return `REQ-${ts}-${rnd}`.toUpperCase(); }\nconst requestId = src.request_id || generateRequestId();\nconst callbackUrl = src.callback_url || src.callbackUrl || src.meta?.callback_url || 'https://REPLACE_WITH_FASTAPI_HOST/api/v1/callbacks/strategy';\nreturn [{ json: { request_id: requestId, project_id: src.project_id || src.chat_context?.project_id || null, project_name: src.project_name || src.input_brief?.title || 'Innexia Strategic Opportunity', analysis_type: src.analysis_type || 'new_business', language: src.language || 'es', organization: src.organization || { name: 'Innexia', industry: 'tecnologia y salud', country: 'Panama' }, input_brief: src.input_brief || {}, execution_options: src.execution_options || { run_modules: ['market_intelligence','bmc','strategy','finance','risks','roadmap','verdict','activities'], generate_kanban: true, generate_gantt: true, persist_outputs: true, strict_json: true }, chat_context: src.chat_context || {}, callback_url: callbackUrl, meta: { ...(src.meta || {}), workflow_version: src.meta?.workflow_version || 'v2.3-chat-webhook-async', source: src.meta?.source || 'chat_webhook_async', created_at: src.meta?.created_at || new Date().toISOString() }, raw_input: src } }];"
+      },
+      "id": "e19f80fa-aabf-4a49-babf-5cfb9837d2b3",
+      "name": "Normalize Async Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1920,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nconst input = $json;\nconst query = `INSERT INTO analysis_requests (request_id, project_id, project_name, user_id, session_id, analysis_type, language_code, organization_name, input_message, input_json, status, progress, current_stage, callback_url, workflow_version, created_at, updated_at) VALUES (${esc(input.request_id)}, ${esc(input.project_id)}, ${esc(input.project_name)}, ${esc(input.chat_context?.user_id || null)}, ${esc(input.chat_context?.session_id || null)}, ${esc(input.analysis_type)}, ${esc(input.language || 'es')}, ${esc(input.organization?.name || null)}, ${esc(input.input_brief?.description || input.chat_context?.original_message || null)}, ${esc(JSON.stringify(input))}, 'queued', 5, 'queued', ${esc(input.callback_url || null)}, ${esc(input.meta?.workflow_version || 'v2.3-chat-webhook-async')}, NOW(), NOW()) ON DUPLICATE KEY UPDATE project_id = VALUES(project_id), project_name = VALUES(project_name), user_id = VALUES(user_id), session_id = VALUES(session_id), analysis_type = VALUES(analysis_type), language_code = VALUES(language_code), organization_name = VALUES(organization_name), input_message = VALUES(input_message), input_json = VALUES(input_json), status = 'queued', progress = 5, current_stage = 'queued', callback_url = VALUES(callback_url), workflow_version = VALUES(workflow_version), updated_at = NOW();`;\nreturn [{ json: { ...input, sql_query: query } }];"
+      },
+      "id": "fdc7bee8-2e9c-48be-8117-78e9283b4472",
+      "name": "Prepare SQL Request Upsert - queued",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1664,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "cf270828-3d92-4a98-ae3b-fa6fee084793",
+      "name": "Insert analysis_requests - queued",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1408,
+        112
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: true, request_id: $(\"Normalize Async Input\").first().json.request_id, status: \"queued\", message: \"Solicitud recibida y en proceso\" } }}",
+        "options": {}
+      },
+      "id": "692e6176-b754-4c5a-bc7a-c33724772691",
+      "name": "Respond 202",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nconst input = $('Normalize Async Input').first().json;\nconst query = `UPDATE analysis_requests SET status = 'processing', progress = 10, current_stage = 'workflow_triggered', updated_at = NOW() WHERE request_id = ${esc(input.request_id)};`;\nreturn [{ json: { ...input, sql_query: query } }];"
+      },
+      "id": "f2ee5abb-4955-4f41-ad81-4ada13c0c642",
+      "name": "Prepare SQL Request Update - processing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -944,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "7d00c785-377e-4aa2-891c-d2eae42fac40",
+      "name": "Update analysis_requests - processing",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -704,
+        112
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "ZinZ5rS9LJPZZ0EV",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ZinZ5rS9LJPZZ0EV",
+          "cachedResultName": "IASE_v5_CORE_v2.3"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "request_id": "={{ $(\"Normalize Async Input\").first().json.request_id }}",
+            "project_name": "={{ $(\"Normalize Async Input\").first().json.project_name }}",
+            "analysis_type": "={{ $(\"Normalize Async Input\").first().json.analysis_type }}",
+            "language": "={{ $(\"Normalize Async Input\").first().json.language }}",
+            "organization": "={{ $(\"Normalize Async Input\").first().json.organization }}",
+            "input_brief": "={{ $(\"Normalize Async Input\").first().json.input_brief }}",
+            "execution_options": "={{ $(\"Normalize Async Input\").first().json.execution_options }}",
+            "chat_context": "={{ $(\"Normalize Async Input\").first().json.chat_context }}",
+            "meta": "={{ $(\"Normalize Async Input\").first().json.meta }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "31727a3e-7542-4e4a-a120-ffbfde82545d",
+      "name": "Execute Strategy Engine Core",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -464,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3aa4dfde-3635-4305-95e9-8249ed15f7d9",
+      "name": "Validate Core Output",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nfunction numOrNull(value) { return value === null || value === undefined || value === '' ? 'NULL' : Number(value); }\nconst core = $json; const result = core.result || {}; const summary = result.summary || {};\nconst query = `INSERT INTO analysis_results (request_id, result_json, executive_summary, market_analysis_json, bmc_json, strategy_json, financial_json, risks_json, roadmap_json, kanban_json, gantt_json, tokens_input, tokens_output, total_duration_seconds, created_at, updated_at) VALUES (${esc(core.request_id)}, ${esc(JSON.stringify(result))}, ${esc(summary.executive_summary || null)}, ${esc(JSON.stringify(result.market_analysis || {}))}, ${esc(JSON.stringify(result.business_model_canvas || {}))}, ${esc(JSON.stringify(result.strategy || {}))}, ${esc(JSON.stringify(result.financials || {}))}, ${esc(JSON.stringify(result.risks || {}))}, ${esc(JSON.stringify(result.roadmap || {}))}, ${esc(JSON.stringify(result.kanban || []))}, ${esc(JSON.stringify(result.gantt || []))}, ${numOrNull(core.metrics?.tokens_input)}, ${numOrNull(core.metrics?.tokens_output)}, ${numOrNull(core.metrics?.total_duration_seconds)}, NOW(), NOW()) ON DUPLICATE KEY UPDATE result_json = VALUES(result_json), executive_summary = VALUES(executive_summary), market_analysis_json = VALUES(market_analysis_json), bmc_json = VALUES(bmc_json), strategy_json = VALUES(strategy_json), financial_json = VALUES(financial_json), risks_json = VALUES(risks_json), roadmap_json = VALUES(roadmap_json), kanban_json = VALUES(kanban_json), gantt_json = VALUES(gantt_json), tokens_input = VALUES(tokens_input), tokens_output = VALUES(tokens_output), total_duration_seconds = VALUES(total_duration_seconds), updated_at = NOW();`;\nreturn [{ json: { ...core, sql_query: query } }];"
+      },
+      "id": "f40d5634-7ccd-4937-9a34-accbff33f628",
+      "name": "Prepare SQL Result Upsert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "2b21a3ca-9c0e-4a7c-97d9-d50038423ee8",
+      "name": "Upsert analysis_results",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nconst core = $json;\nconst query = `UPDATE analysis_requests SET status = 'completed', progress = 100, current_stage = 'completed', completed_at = NOW(), updated_at = NOW(), error_code = NULL, error_message = NULL WHERE request_id = ${esc(core.request_id)};`;\nreturn [{ json: { ...core, sql_query: query } }];"
+      },
+      "id": "ebd4935e-2286-47ba-8cec-6e0ab435d54a",
+      "name": "Prepare SQL Request Update - completed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "a58d20fd-bac2-496e-938a-9b147c141678",
+      "name": "Update analysis_requests - completed",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        720,
+        0
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const core = $json; const input = $('Normalize Async Input').first().json; const result = core.result || {};\nreturn [{ json: { ...core, callback_url: input.callback_url, callback_token: 'REPLACE_WITH_CALLBACK_SHARED_TOKEN', callback_payload: { request_id: core.request_id, project_id: input.project_id || null, status: core.status || 'completed', progress: 100, current_stage: 'completed', completed_at: new Date().toISOString(), engine_version: 'IASE_v5_CORE_v2.3', workflow_version: input.meta?.workflow_version || 'v2.3-chat-webhook-async', result: result, metrics: core.metrics || {}, error: null } } }];"
+      },
+      "id": "7efbe055-fea2-400d-b8d8-24d94840de83",
+      "name": "Build Success Callback Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Callback-Token",
+              "value": "={{ $json.callback_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.callback_payload }}",
+        "options": {
+          "redirect": {},
+          "timeout": 30000
+        }
+      },
+      "id": "c4343d2c-e0d3-4247-b801-16881b926a60",
+      "name": "HTTP Callback Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nconst input = $('Build Success Callback Payload').first().json; const responseBody = $json.body ? JSON.stringify($json.body) : JSON.stringify($json); const statusCode = $json.statusCode || 200;\nconst query = `INSERT INTO callback_logs (request_id, callback_url, attempt_number, request_payload, response_code, response_body, status, created_at) VALUES (${esc(input.request_id)}, ${esc(input.callback_url)}, 1, ${esc(JSON.stringify(input.callback_payload))}, ${statusCode}, ${esc(responseBody)}, 'success', NOW());`;\nreturn [{ json: { ...input, sql_query: query } }];"
+      },
+      "id": "428a77c6-6e71-4bbd-b1cf-d16b720f171c",
+      "name": "Prepare SQL Callback Log - success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "1d6b2665-7dd8-416f-bb00-25ce40e089ba",
+      "name": "Insert callback_log - success",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1680,
+        0
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const core = $json; const input = $('Normalize Async Input').first().json; const errorMessage = core?.error?.message || core?.message || 'Strategy Engine Core returned an invalid response'; const errorCode = core?.error?.code || 'ENGINE_OUTPUT_INVALID';\nreturn [{ json: { request_id: input.request_id, project_id: input.project_id || null, callback_url: input.callback_url, callback_token: 'REPLACE_WITH_CALLBACK_SHARED_TOKEN', error_code: errorCode, error_message: errorMessage, callback_payload: { request_id: input.request_id, project_id: input.project_id || null, status: 'failed', progress: 100, current_stage: 'failed', completed_at: new Date().toISOString(), engine_version: 'IASE_v5_CORE_v2.3', workflow_version: input.meta?.workflow_version || 'v2.3-chat-webhook-async', result: null, metrics: core.metrics || {}, error: { code: errorCode, message: errorMessage } } } }];"
+      },
+      "id": "172becc3-6e8f-40fa-928c-b6b16af47365",
+      "name": "Build Failure Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nconst data = $json; const query = `UPDATE analysis_requests SET status = 'failed', progress = 100, current_stage = 'failed', completed_at = NOW(), updated_at = NOW(), error_code = ${esc(data.error_code)}, error_message = ${esc(data.error_message)} WHERE request_id = ${esc(data.request_id)};`;\nreturn [{ json: { ...data, sql_query: query } }];"
+      },
+      "id": "4a45c9da-57d8-4cf9-b208-491c9112fd24",
+      "name": "Prepare SQL Request Update - failed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "fa13f0e8-3aaa-4777-a769-2898589014b1",
+      "name": "Update analysis_requests - failed",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        480,
+        224
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Callback-Token",
+              "value": "={{ $json.callback_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.callback_payload }}",
+        "options": {
+          "redirect": {},
+          "timeout": 30000
+        }
+      },
+      "id": "dee307e4-64aa-4095-a2d4-ae96b58369a8",
+      "name": "HTTP Callback Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(value) { if (value === null || value === undefined) return 'NULL'; return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, \"''\")}'`; }\nconst input = $('Build Failure Payload').first().json; const responseBody = $json.body ? JSON.stringify($json.body) : JSON.stringify($json); const statusCode = $json.statusCode || 200;\nconst query = `INSERT INTO callback_logs (request_id, callback_url, attempt_number, request_payload, response_code, response_body, status, created_at) VALUES (${esc(input.request_id)}, ${esc(input.callback_url)}, 1, ${esc(JSON.stringify(input.callback_payload))}, ${statusCode}, ${esc(responseBody)}, 'failed', NOW());`;\nreturn [{ json: { ...input, sql_query: query } }];"
+      },
+      "id": "4afca33e-b8b9-43a7-8a0d-d7645ecff91b",
+      "name": "Prepare SQL Callback Log - failed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.sql_query }}",
+        "options": {}
+      },
+      "id": "7d43d2c0-27d8-475c-b078-aa871ae93ab8",
+      "name": "Insert callback_log - failed",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1200,
+        224
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "WCk45F72K4HOUr3k",
+          "name": "MySQL Innexia"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Async Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Async Input": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Request Upsert - queued",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Request Upsert - queued": {
+      "main": [
+        [
+          {
+            "node": "Insert analysis_requests - queued",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert analysis_requests - queued": {
+      "main": [
+        [
+          {
+            "node": "Respond 202",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 202": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Request Update - processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Request Update - processing": {
+      "main": [
+        [
+          {
+            "node": "Update analysis_requests - processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update analysis_requests - processing": {
+      "main": [
+        [
+          {
+            "node": "Execute Strategy Engine Core",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Strategy Engine Core": {
+      "main": [
+        [
+          {
+            "node": "Validate Core Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Core Output": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Result Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Failure Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Result Upsert": {
+      "main": [
+        [
+          {
+            "node": "Upsert analysis_results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert analysis_results": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Request Update - completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Request Update - completed": {
+      "main": [
+        [
+          {
+            "node": "Update analysis_requests - completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update analysis_requests - completed": {
+      "main": [
+        [
+          {
+            "node": "Build Success Callback Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Success Callback Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP Callback Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Callback Success": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Callback Log - success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Callback Log - success": {
+      "main": [
+        [
+          {
+            "node": "Insert callback_log - success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Failure Payload": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Request Update - failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Request Update - failed": {
+      "main": [
+        [
+          {
+            "node": "Update analysis_requests - failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update analysis_requests - failed": {
+      "main": [
+        [
+          {
+            "node": "HTTP Callback Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Callback Failed": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Callback Log - failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Callback Log - failed": {
+      "main": [
+        [
+          {
+            "node": "Insert callback_log - failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "817661be-eb2e-49c6-ab64-31dedf8a21b4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "DiTKPVWxU2YpRNmX",
+  "tags": []
+}

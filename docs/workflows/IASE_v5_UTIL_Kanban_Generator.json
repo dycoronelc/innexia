@@ -1,0 +1,86 @@
+{
+  "name": "IASE_v5_UTIL_Kanban_Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "89cd4fe5-ad79-4172-b7ca-c97f6afe665a",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const activities = $json.activities?.activities || $json.activities || [];\nconst columns = [\n  { id: 'todo', title: 'Por hacer' },\n  { id: 'in_progress', title: 'En progreso' },\n  { id: 'review', title: 'En revisión' },\n  { id: 'done', title: 'Completado' }\n];\nconst cards = activities.map(a => ({\n  id: a.activity_id,\n  column_id: a.kanban_status || 'todo',\n  title: a.title,\n  description: a.description,\n  priority: a.priority,\n  owner_role: a.owner_role,\n  epic: a.epic,\n  phase_id: a.phase_id,\n  tags: [a.epic, a.phase_id].filter(Boolean),\n}));\nreturn [{ json: { ...$json, kanban: { columns, cards } } }];"
+      },
+      "id": "bc9c4e2f-3aab-480b-8b5a-d5d872c0faac",
+      "name": "Generate Kanban JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "36284a54-6a30-43ca-9491-b6dc6ca879ac",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        400
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Generate Kanban JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Kanban JSON": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "82a671f2-b56f-4ef2-a782-21ed85e88b38",
+  "meta": {
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "pZdaXqX6xleSChtF",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

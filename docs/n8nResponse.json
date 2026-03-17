@@ -1,0 +1,1035 @@
+[
+    {
+      "response": {
+        "body": {
+          "request_id": "REQ-E28335A0410A-MMTSZD74-0S271G",
+          "project_name": "Clínica Digital en Panamá",
+          "workflow_version": "v5.3",
+          "status": "completed",
+          "language": "es",
+          "input": {
+            "request_id": "REQ-E28335A0410A-MMTSZD74-0S271G",
+            "project_name": "Clínica Digital en Panamá",
+            "analysis_type": "new_business",
+            "language": "es",
+            "organization": {
+              "name": "Innexia",
+              "industry": "tecnologia y salud",
+              "country": "Panama"
+            },
+            "input_brief": {
+              "title": "Lanzamiento de clínica digital en Panamá",
+              "description": "Plan para establecer y operar una clínica digital en Panamá que ofrezca servicios médicos modernos y accesibles a través de plataformas digitales.",
+              "objective": "Diseñar y ejecutar una estrategia completa para el lanzamiento exitoso de una clínica digital en Panamá.",
+              "problem_statement": "Crear un servicio de salud digital viable que satisfaga las necesidades del mercado panameño, asegurando sostenibilidad financiera, cumplimiento regulatorio y ventaja competitiva.",
+              "constraints": [
+                "Regulaciones sanitarias locales",
+                "Capacidad tecnológica y logística",
+                "Recursos financieros disponibles",
+                "Diferenciación frente a competidores existentes"
+              ]
+            },
+            "context_sources": {
+              "use_tavily": true,
+              "use_internal_context": false
+            },
+            "execution_options": {
+              "run_modules": [
+                "market_intelligence",
+                "bmc",
+                "strategy",
+                "finance",
+                "risks",
+                "roadmap",
+                "verdict",
+                "activities"
+              ],
+              "generate_kanban": true,
+              "generate_gantt": true,
+              "persist_outputs": true,
+              "strict_json": true
+            },
+            "chat_context": {
+              "session_id": "e28335a0410a47bc8253c9cea8007bf1",
+              "user_id": null,
+              "action": "sendMessage",
+              "original_message": "Quiero lanzar una clínica digital en Panamá",
+              "history": [],
+              "current_project_context": null,
+              "intent": "new_analysis",
+              "analysis_scope": "full",
+              "user_goal": "Lanzar una clínica digital en Panamá",
+              "requires_followup": false,
+              "missing_info": []
+            },
+            "meta": {
+              "workflow_version": "v5.3-enterprise",
+              "source": "chat_trigger",
+              "created_at": "2026-03-16T23:16:59.920Z",
+              "session_id": "e28335a0410a47bc8253c9cea8007bf1",
+              "user_id": null
+            }
+          },
+          "supervisor": {
+            "project_profile": {
+              "project_type": "nueva iniciativa de negocio",
+              "strategic_maturity": "en desarrollo",
+              "complexity": "alta",
+              "confidence": 70
+            },
+            "execution_plan": {
+              "run_bmc": true,
+              "run_strategy": true,
+              "run_roadmap": true,
+              "run_finance": true,
+              "run_risks": true,
+              "run_verdict": true,
+              "run_activities": true
+            },
+            "context_bundle": {
+              "normalized_problem": "Crear un servicio de salud digital viable en Panamá.",
+              "objective": "Diseñar y ejecutar una estrategia para el lanzamiento de la clínica digital.",
+              "target_users": [
+                "pacientes",
+                "profesionales de la salud",
+                "comunidad en general"
+              ],
+              "core_value_hypothesis": "Ofrecer servicios médicos accesibles y modernos a través de plataformas digitales mejorará el acceso a la atención médica en Panamá.",
+              "key_constraints": [
+                "Regulaciones sanitarias locales",
+                "Capacidad tecnológica y logística",
+                "Recursos financieros disponibles",
+                "Competencia existente"
+              ],
+              "assumptions": [
+                "El mercado panameño acepta servicios digitales de salud",
+                "La tecnología disponible es adecuada"
+              ]
+            },
+            "dependencies": [
+              "bmc -> strategy",
+              "strategy -> roadmap",
+              "roadmap -> finance",
+              "risks -> strategy"
+            ],
+            "priority_focus_areas": [
+              "cumplimiento regulatorio",
+              "sostenibilidad financiera",
+              "diferenciación competitiva"
+            ],
+            "preliminary_risks": [
+              "incumplimiento de regulaciones",
+              "baja adopción del usuario",
+              "inversión financiera insuficiente"
+            ]
+          },
+          "market_analysis": {
+            "market_overview": "La clínica digital en Panamá busca innovar en la atención médica mediante el uso de tecnologías digitales, aprovechando la creciente aceptación de la telemedicina en la región.",
+            "target_market": [
+              "Pacientes en áreas urbanas y rurales",
+              "Profesionales de la salud buscando modernizar sus prácticas",
+              "Instituciones educativas y corporativas que necesitan servicios de salud para su personal"
+            ],
+            "customer_needs": [
+              "Acceso a servicios de salud desde casa",
+              "Consultas médicas rápidas y eficientes",
+              "Costo accesible de servicios médicos",
+              "Capacitación de profesionales en el uso de tecnologías digitales"
+            ],
+            "industry_trends": [
+              "Aumento en la aceptación de la telemedicina post-pandemia",
+              "Inversión en plataformas digitales de salud",
+              "Colaboraciones entre entidades de salud y tecnología",
+              "Foco en la sostenibilidad financiera y el cumplimiento regulatorio"
+            ],
+            "competitors": [
+              {
+                "name": "Clínica Santa María",
+                "type": "Clínica tradicional con servicios digitales",
+                "strengths": [
+                  "Confianza establecida en la comunidad",
+                  "Amplia gama de servicios"
+                ],
+                "weaknesses": [
+                  "Baja adaptación a tecnologías digitales",
+                  "Costos más altos"
+                ]
+              },
+              {
+                "name": "Xpert Salud",
+                "type": "Plataforma de telemedicina",
+                "strengths": [
+                  "Interfaz amigable",
+                  "Acceso a múltiples especialistas"
+                ],
+                "weaknesses": [
+                  "Menor reconocimiento de marca",
+                  "Limites de servicio en áreas rurales"
+                ]
+              }
+            ],
+            "regulatory_factors": [
+              "Leyes de protección de datos",
+              "Regulaciones sobre telemedicina",
+              "Requisitos de licenciamiento para profesionales de salud"
+            ],
+            "barriers_to_entry": [
+              "Costos iniciales altos para tecnología y marketing",
+              "Competencia establecida con infraestructura sólida",
+              "Requisitos regulatorios complejos"
+            ],
+            "opportunities": [
+              "Creciente demanda de atención médica digital",
+              "Alianzas con instituciones educativas para capacitación",
+              "Mercado sin explotar en áreas rurales"
+            ],
+            "tam_sam_som": {
+              "tam": "200 millones USD (mercado total de salud en Panamá)",
+              "sam": "50 millones USD (mercado de clínica digital)",
+              "som": "10 millones USD (primeros tres años de operación)"
+            },
+            "assumptions": [
+              "El mercado panameño está listo para adoptar soluciones de salud digitales",
+              "Las regulaciones permitirán operar sin grandes restricciones en telemedicina",
+              "Los pacientes buscan activamente alternativas digitales para el acceso a la salud"
+            ]
+          },
+          "bmc": {
+            "customer_segments": [
+              "Pacientes en áreas urbanas y rurales",
+              "Profesionales de la salud",
+              "Instituciones educativas y corporativas"
+            ],
+            "value_propositions": [
+              "Servicios de salud accesibles desde casa",
+              "Consultas médicas rápidas y eficientes",
+              "Capacitación de profesionales en el uso de tecnologías digitales",
+              "Costos accesibles de servicios médicos"
+            ],
+            "channels": [
+              "Plataforma digital propia",
+              "Aplicación móvil",
+              "Redes sociales",
+              "Campañas de marketing digital"
+            ],
+            "customer_relationships": [
+              "Atención personalizada en línea",
+              "Asesoramiento médico a través de videoconferencias",
+              "Soporte técnico permanente",
+              "Programas de fidelización"
+            ],
+            "revenue_streams": [
+              "Honorarios por consultas médicas",
+              "Membresías para acceso a servicios premium",
+              "Capacitación de profesionales de la salud",
+              "Alianzas con empresas para servicios de salud para empleados"
+            ],
+            "key_resources": [
+              "Plataforma tecnológica",
+              "Equipo médico calificado",
+              "Infraestructura de TI",
+              "Relaciones con proveedores de servicios de salud"
+            ],
+            "key_activities": [
+              "Desarrollo y mantenimiento de plataforma digital",
+              "Marketing y promoción de servicios",
+              "Capacitación de personal",
+              "Cumplimiento regulatorio"
+            ],
+            "key_partners": [
+              "Proveedores de tecnología",
+              "Entidades de salud",
+              "Instituciones educativas",
+              "Gobierno y reguladores sanitarios"
+            ],
+            "cost_structure": [
+              "Desarrollo tecnológico",
+              "Gastos operativos y administrativos",
+              "Marketing y publicidad",
+              "Costos de cumplimiento regulatorio"
+            ]
+          },
+          "strategy": {
+            "swot": {
+              "strengths": [
+                "Innovación en atención médica mediante plataformas digitales",
+                "Acceso a un mercado en crecimiento con aceptación de telemedicina",
+                "Flexibilidad en costos y servicios adaptados a necesidades locales"
+              ],
+              "weaknesses": [
+                "Inversión inicial alta necesaria para tecnología y marketing",
+                "Dependencia de la tecnología para el funcionamiento",
+                "Baja aceptación inicial en ciertas demografías"
+              ],
+              "opportunities": [
+                "Creciente demanda de atención médica digital en Panamá",
+                "Alianzas estratégicas con instituciones educativas y corporativas",
+                "Expansión hacia áreas rurales con escasos servicios de salud"
+              ],
+              "threats": [
+                "Competencia establecida con infraestructura sólida",
+                "Regulaciones sanitarias que podrían complicar operaciones",
+                "Baja adopción de servicios digitales por parte de ciertos grupos"
+              ]
+            },
+            "strategic_objectives": [
+              "Establecer la clínica digital como líder en servicios de telemedicina en Panamá",
+              "Aumentar la conciencia y adopción de servicios de salud digitales",
+              "Asegurar la viabilidad financiera y sostenibilidad en los primeros tres años"
+            ],
+            "competitive_advantages": [
+              "Modelo de atención médica moderno y accesible",
+              "Capacitación continua de profesionales en nuevas tecnologías",
+              "Adaptabilidad de servicios a las necesidades de la población panameña"
+            ],
+            "critical_success_factors": [
+              "Cumplimiento estricto de regulaciones de salud",
+              "Estrategias de marketing efectivas para atraer pacientes",
+              "Desarrollo de tecnología amigable y accesible para usuarios"
+            ],
+            "strategic_recommendations": [
+              "Iniciar alianzas con profesionales de la salud y corporaciones para mejorar la oferta de servicios",
+              "Realizar estudios de mercado adicionales para entender más a fondo las necesidades de los usuarios",
+              "Implementar un programa de educación para pacientes sobre los beneficios de la telemedicina"
+            ],
+            "assumptions": [
+              "El mercado panameño está dispuesto a adoptar soluciones digitales en salud",
+              "Las regulaciones permitirán una operación efectiva sin obstáculos significativos",
+              "La aceptación de la tecnología en salud no encontrará grandes barreras en la población objetivo"
+            ]
+          },
+          "finance": {
+            "assumptions": {
+              "initial_investment": 100000,
+              "monthly_operating_cost": 15000,
+              "pricing_model": "pago por consulta y suscripciones mensuales",
+              "expected_monthly_revenue": 25000
+            },
+            "projection_summary": {
+              "year_1_revenue": 300000,
+              "year_1_cost": 180000,
+              "estimated_margin": 40,
+              "payback_months": 4
+            },
+            "financial_observations": [
+              "La inversión inicial se basa en la adquisición de tecnología y marketing.",
+              "El modelo de precios permite captar tanto clientes individuales como corporativos.",
+              "Se prevé un crecimiento sostenido en la demanda de servicios digitales de salud."
+            ]
+          },
+          "risks": [
+            {
+              "risk_id": "R1",
+              "title": "Incumplimiento de regulaciones",
+              "category": "Regulatorio",
+              "probability": "media",
+              "impact": "alto",
+              "mitigation": "Contratar expertos legales para asegurar el cumplimiento de normativas locales.",
+              "owner": "Director de Cumplimiento"
+            },
+            {
+              "risk_id": "R2",
+              "title": "Baja adopción del usuario",
+              "category": "Adopción",
+              "probability": "alta",
+              "impact": "medio",
+              "mitigation": "Desarrollar campañas de sensibilización y capacitación para usuarios potenciales.",
+              "owner": "Gerente de Marketing"
+            },
+            {
+              "risk_id": "R3",
+              "title": "Inversión financiera insuficiente",
+              "category": "Financiero",
+              "probability": "media",
+              "impact": "alto",
+              "mitigation": "Realizar un análisis exhaustivo del financiamiento y buscar inversores adicionales.",
+              "owner": "CFO"
+            },
+            {
+              "risk_id": "R4",
+              "title": "Dependencia de tecnología",
+              "category": "Técnico",
+              "probability": "media",
+              "impact": "alto",
+              "mitigation": "Implementar sistemas de respaldo y capacitación tecnológica continua.",
+              "owner": "CTO"
+            },
+            {
+              "risk_id": "R5",
+              "title": "Competencia establecida",
+              "category": "Operativo",
+              "probability": "alta",
+              "impact": "medio",
+              "mitigation": "Desarrollar una propuesta de valor clara y diferenciadora.",
+              "owner": "Gerente de Estrategia"
+            },
+            {
+              "risk_id": "R6",
+              "title": "Problemas de ciberseguridad",
+              "category": "Seguridad",
+              "probability": "media",
+              "impact": "alto",
+              "mitigation": "Establecer protocolos de seguridad y realizar auditorías regulares.",
+              "owner": "CISO"
+            },
+            {
+              "risk_id": "R7",
+              "title": "Requerimientos técnicos complejos",
+              "category": "Técnico",
+              "probability": "media",
+              "impact": "medio",
+              "mitigation": "Inversiones en formación y desarrollo de capacidades técnicas del equipo.",
+              "owner": "CTO"
+            }
+          ],
+          "roadmap": {
+            "phases": [
+              {
+                "phase_id": "P1",
+                "name": "Investigación de mercado y análisis de viabilidad",
+                "duration_weeks": 4,
+                "goals": [
+                  "Identificar necesidades del mercado",
+                  "Evaluar la competencia",
+                  "Analizar tendencias y regulaciones"
+                ],
+                "deliverables": [
+                  "Informe de análisis de mercado",
+                  "Resumen de competidores y oportunidades"
+                ],
+                "dependencies": []
+              },
+              {
+                "phase_id": "P2",
+                "name": "Desarrollo del modelo de negocio",
+                "duration_weeks": 3,
+                "goals": [
+                  "Definir propuesta de valor",
+                  "Establecer estructura de precios",
+                  "Identificar fuentes de ingresos"
+                ],
+                "deliverables": [
+                  "Business Model Canvas",
+                  "Informe de propuesta de negocio"
+                ],
+                "dependencies": [
+                  "P1"
+                ]
+              },
+              {
+                "phase_id": "P3",
+                "name": "Planificación estratégica y regulatoria",
+                "duration_weeks": 4,
+                "goals": [
+                  "Asegurar cumplimiento normativo",
+                  "Definir estrategia de entrada al mercado",
+                  "Desarrollar plan operativo inicial"
+                ],
+                "deliverables": [
+                  "Plan estratégico",
+                  "Requisitos regulatorios claros"
+                ],
+                "dependencies": [
+                  "P2"
+                ]
+              },
+              {
+                "phase_id": "P4",
+                "name": "Preparación del lanzamiento",
+                "duration_weeks": 5,
+                "goals": [
+                  "Implementar plataforma tecnológica",
+                  "Diseñar plan de marketing",
+                  "Establecer alianzas estratégicas"
+                ],
+                "deliverables": [
+                  "Plataforma digital funcional",
+                  "Plan de marketing"
+                ],
+                "dependencies": [
+                  "P3"
+                ]
+              },
+              {
+                "phase_id": "P5",
+                "name": "Lanzamiento de la clínica digital",
+                "duration_weeks": 2,
+                "goals": [
+                  "Iniciar operaciones",
+                  "Monitorear desempeño inicial",
+                  "Recoger feedback de usuarios"
+                ],
+                "deliverables": [
+                  "Informe inaugural de operaciones",
+                  "Feedback de usuarios y ajustes necesarios"
+                ],
+                "dependencies": [
+                  "P4"
+                ]
+              },
+              {
+                "phase_id": "P6",
+                "name": "Evaluación y mejora continua",
+                "duration_weeks": 4,
+                "goals": [
+                  "Analizar resultados y crecimiento",
+                  "Identificar áreas de mejora",
+                  "Reajustar estrategia de negocio"
+                ],
+                "deliverables": [
+                  "Informe de evaluación",
+                  "Plan de acción para mejoras"
+                ],
+                "dependencies": [
+                  "P5"
+                ]
+              }
+            ],
+            "milestones": [],
+            "assumptions": []
+          },
+          "verdict": {
+            "decision": "avanzar_con_piloto",
+            "confidence": 85,
+            "reasons": [
+              "El análisis de mercado indica una creciente demanda de servicios de salud digitales en Panamá.",
+              "La estructura de costos y los ingresos proyectados presentan un modelo financiero viable con un buen margen.",
+              "Se identificaron riesgos que pueden ser mitigados con estrategias concretas, especialmente en cumplimiento regulatorio y adopción de usuarios."
+            ],
+            "conditions_to_proceed": [
+              "Implementar un programa piloto en un área específica para validar la aceptación del servicio.",
+              "Desarrollar campañas de educación y concientización dirigidas a los usuarios potenciales."
+            ],
+            "executive_summary": "La propuesta de lanzamiento de una clínica digital en Panamá presenta un fuerte potencial de mercado, respaldado por un análisis financiero positivo y un marco estratégico claro. Sin embargo, se recomienda iniciar con un programa piloto para asegurar la aceptación del usuario y ajustar las operaciones según el feedback recibido."
+          },
+          "activities": [
+            {
+              "activity_id": "A1",
+              "epic": "Investigación de mercado y análisis de viabilidad",
+              "title": "Identificar necesidades del mercado",
+              "description": "Realizar entrevistas y encuestas para comprender las necesidades de salud digital de los pacientes en Panamá.",
+              "priority": "alta",
+              "owner_role": "Analista de Mercado",
+              "estimated_days": 10,
+              "depends_on": [],
+              "kanban_status": "todo",
+              "phase_id": "P1"
+            },
+            {
+              "activity_id": "A2",
+              "epic": "Investigación de mercado y análisis de viabilidad",
+              "title": "Evaluar la competencia",
+              "description": "Analizar competidores en el sector de clínicas digitales y tradicionales en Panamá.",
+              "priority": "alta",
+              "owner_role": "Analista de Mercado",
+              "estimated_days": 7,
+              "depends_on": [],
+              "kanban_status": "todo",
+              "phase_id": "P1"
+            },
+            {
+              "activity_id": "A3",
+              "epic": "Investigación de mercado y análisis de viabilidad",
+              "title": "Analizar tendencias y regulaciones",
+              "description": "Revisión de las tendencias del mercado de salud digital y regulaciones aplicables en Panamá.",
+              "priority": "alta",
+              "owner_role": "Consultor Regulatorio",
+              "estimated_days": 7,
+              "depends_on": [],
+              "kanban_status": "todo",
+              "phase_id": "P1"
+            },
+            {
+              "activity_id": "A4",
+              "epic": "Desarrollo del modelo de negocio",
+              "title": "Definir propuesta de valor",
+              "description": "Establecer la propuesta de valor única para la clínica digital enfocada en el público panameño.",
+              "priority": "alta",
+              "owner_role": "Gerente de Estrategia",
+              "estimated_days": 5,
+              "depends_on": [
+                "A1",
+                "A2",
+                "A3"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P2"
+            },
+            {
+              "activity_id": "A5",
+              "epic": "Desarrollo del modelo de negocio",
+              "title": "Establecer estructura de precios",
+              "description": "Definir la estrategia de precios para servicios digitales de salud, considerando costos y competencia.",
+              "priority": "alta",
+              "owner_role": "CFO",
+              "estimated_days": 5,
+              "depends_on": [
+                "A4"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P2"
+            },
+            {
+              "activity_id": "A6",
+              "epic": "Desarrollo del modelo de negocio",
+              "title": "Identificar fuentes de ingresos",
+              "description": "Investigación sobre nuevos posibles ingresos: suscripciones, publicidad y alianzas.",
+              "priority": "alta",
+              "owner_role": "Gerente de Finanzas",
+              "estimated_days": 5,
+              "depends_on": [
+                "A4"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P2"
+            },
+            {
+              "activity_id": "A7",
+              "epic": "Planificación estratégica y regulatoria",
+              "title": "Asegurar cumplimiento normativo",
+              "description": "Desarrollar un plan para cumplir con las regulaciones locales y estándares de salud.",
+              "priority": "alta",
+              "owner_role": "Director de Cumplimiento",
+              "estimated_days": 10,
+              "depends_on": [
+                "A5",
+                "A6"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P3"
+            },
+            {
+              "activity_id": "A8",
+              "epic": "Planificación estratégica y regulatoria",
+              "title": "Definir estrategia de entrada al mercado",
+              "description": "Crear un plan de acción para lanzar la clínica digital al mercado panameño.",
+              "priority": "alta",
+              "owner_role": "Gerente de Estrategia",
+              "estimated_days": 7,
+              "depends_on": [
+                "A7"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P3"
+            },
+            {
+              "activity_id": "A9",
+              "epic": "Preparación del lanzamiento",
+              "title": "Implementar plataforma tecnológica",
+              "description": "Desarrollar y probar la plataforma digital para servicios médicos digitales.",
+              "priority": "alta",
+              "owner_role": "CTO",
+              "estimated_days": 15,
+              "depends_on": [
+                "A8"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P4"
+            },
+            {
+              "activity_id": "A10",
+              "epic": "Preparación del lanzamiento",
+              "title": "Diseñar plan de marketing",
+              "description": "Crear estrategias y tácticas de marketing para atraer a los primeros usuarios.",
+              "priority": "alta",
+              "owner_role": "Gerente de Marketing",
+              "estimated_days": 10,
+              "depends_on": [
+                "A8"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P4"
+            },
+            {
+              "activity_id": "A11",
+              "epic": "Lanzamiento de la clínica digital",
+              "title": "Iniciar operaciones",
+              "description": "Lanzar oficialmente la clínica digital y empezar a operar.",
+              "priority": "alta",
+              "owner_role": "Gerente de Operaciones",
+              "estimated_days": 5,
+              "depends_on": [
+                "A9",
+                "A10"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P5"
+            },
+            {
+              "activity_id": "A12",
+              "epic": "Evaluación y mejora continua",
+              "title": "Analizar resultados y crecimiento",
+              "description": "Evaluar el desempeño inicial de la clínica y ajustar estrategias según el feedback.",
+              "priority": "alta",
+              "owner_role": "Analista de Datos",
+              "estimated_days": 10,
+              "depends_on": [
+                "A11"
+              ],
+              "kanban_status": "todo",
+              "phase_id": "P6"
+            }
+          ],
+          "kanban": {
+            "columns": [
+              {
+                "id": "todo",
+                "title": "Por hacer"
+              },
+              {
+                "id": "in_progress",
+                "title": "En progreso"
+              },
+              {
+                "id": "review",
+                "title": "En revisión"
+              },
+              {
+                "id": "done",
+                "title": "Completado"
+              }
+            ],
+            "cards": [
+              {
+                "id": "A1",
+                "column_id": "todo",
+                "title": "Identificar necesidades del mercado",
+                "description": "Realizar entrevistas y encuestas para comprender las necesidades de salud digital de los pacientes en Panamá.",
+                "priority": "alta",
+                "owner_role": "Analista de Mercado",
+                "epic": "Investigación de mercado y análisis de viabilidad",
+                "phase_id": "P1",
+                "tags": [
+                  "Investigación de mercado y análisis de viabilidad",
+                  "P1"
+                ]
+              },
+              {
+                "id": "A2",
+                "column_id": "todo",
+                "title": "Evaluar la competencia",
+                "description": "Analizar competidores en el sector de clínicas digitales y tradicionales en Panamá.",
+                "priority": "alta",
+                "owner_role": "Analista de Mercado",
+                "epic": "Investigación de mercado y análisis de viabilidad",
+                "phase_id": "P1",
+                "tags": [
+                  "Investigación de mercado y análisis de viabilidad",
+                  "P1"
+                ]
+              },
+              {
+                "id": "A3",
+                "column_id": "todo",
+                "title": "Analizar tendencias y regulaciones",
+                "description": "Revisión de las tendencias del mercado de salud digital y regulaciones aplicables en Panamá.",
+                "priority": "alta",
+                "owner_role": "Consultor Regulatorio",
+                "epic": "Investigación de mercado y análisis de viabilidad",
+                "phase_id": "P1",
+                "tags": [
+                  "Investigación de mercado y análisis de viabilidad",
+                  "P1"
+                ]
+              },
+              {
+                "id": "A4",
+                "column_id": "todo",
+                "title": "Definir propuesta de valor",
+                "description": "Establecer la propuesta de valor única para la clínica digital enfocada en el público panameño.",
+                "priority": "alta",
+                "owner_role": "Gerente de Estrategia",
+                "epic": "Desarrollo del modelo de negocio",
+                "phase_id": "P2",
+                "tags": [
+                  "Desarrollo del modelo de negocio",
+                  "P2"
+                ]
+              },
+              {
+                "id": "A5",
+                "column_id": "todo",
+                "title": "Establecer estructura de precios",
+                "description": "Definir la estrategia de precios para servicios digitales de salud, considerando costos y competencia.",
+                "priority": "alta",
+                "owner_role": "CFO",
+                "epic": "Desarrollo del modelo de negocio",
+                "phase_id": "P2",
+                "tags": [
+                  "Desarrollo del modelo de negocio",
+                  "P2"
+                ]
+              },
+              {
+                "id": "A6",
+                "column_id": "todo",
+                "title": "Identificar fuentes de ingresos",
+                "description": "Investigación sobre nuevos posibles ingresos: suscripciones, publicidad y alianzas.",
+                "priority": "alta",
+                "owner_role": "Gerente de Finanzas",
+                "epic": "Desarrollo del modelo de negocio",
+                "phase_id": "P2",
+                "tags": [
+                  "Desarrollo del modelo de negocio",
+                  "P2"
+                ]
+              },
+              {
+                "id": "A7",
+                "column_id": "todo",
+                "title": "Asegurar cumplimiento normativo",
+                "description": "Desarrollar un plan para cumplir con las regulaciones locales y estándares de salud.",
+                "priority": "alta",
+                "owner_role": "Director de Cumplimiento",
+                "epic": "Planificación estratégica y regulatoria",
+                "phase_id": "P3",
+                "tags": [
+                  "Planificación estratégica y regulatoria",
+                  "P3"
+                ]
+              },
+              {
+                "id": "A8",
+                "column_id": "todo",
+                "title": "Definir estrategia de entrada al mercado",
+                "description": "Crear un plan de acción para lanzar la clínica digital al mercado panameño.",
+                "priority": "alta",
+                "owner_role": "Gerente de Estrategia",
+                "epic": "Planificación estratégica y regulatoria",
+                "phase_id": "P3",
+                "tags": [
+                  "Planificación estratégica y regulatoria",
+                  "P3"
+                ]
+              },
+              {
+                "id": "A9",
+                "column_id": "todo",
+                "title": "Implementar plataforma tecnológica",
+                "description": "Desarrollar y probar la plataforma digital para servicios médicos digitales.",
+                "priority": "alta",
+                "owner_role": "CTO",
+                "epic": "Preparación del lanzamiento",
+                "phase_id": "P4",
+                "tags": [
+                  "Preparación del lanzamiento",
+                  "P4"
+                ]
+              },
+              {
+                "id": "A10",
+                "column_id": "todo",
+                "title": "Diseñar plan de marketing",
+                "description": "Crear estrategias y tácticas de marketing para atraer a los primeros usuarios.",
+                "priority": "alta",
+                "owner_role": "Gerente de Marketing",
+                "epic": "Preparación del lanzamiento",
+                "phase_id": "P4",
+                "tags": [
+                  "Preparación del lanzamiento",
+                  "P4"
+                ]
+              },
+              {
+                "id": "A11",
+                "column_id": "todo",
+                "title": "Iniciar operaciones",
+                "description": "Lanzar oficialmente la clínica digital y empezar a operar.",
+                "priority": "alta",
+                "owner_role": "Gerente de Operaciones",
+                "epic": "Lanzamiento de la clínica digital",
+                "phase_id": "P5",
+                "tags": [
+                  "Lanzamiento de la clínica digital",
+                  "P5"
+                ]
+              },
+              {
+                "id": "A12",
+                "column_id": "todo",
+                "title": "Analizar resultados y crecimiento",
+                "description": "Evaluar el desempeño inicial de la clínica y ajustar estrategias según el feedback.",
+                "priority": "alta",
+                "owner_role": "Analista de Datos",
+                "epic": "Evaluación y mejora continua",
+                "phase_id": "P6",
+                "tags": [
+                  "Evaluación y mejora continua",
+                  "P6"
+                ]
+              }
+            ]
+          },
+          "gantt": {
+            "project_start": "2026-03-16",
+            "tasks": [
+              {
+                "id": "A1",
+                "name": "Identificar necesidades del mercado",
+                "start": "2026-03-16",
+                "end": "2026-03-26",
+                "progress": 0,
+                "dependencies": [],
+                "phase_id": "P1"
+              },
+              {
+                "id": "A2",
+                "name": "Evaluar la competencia",
+                "start": "2026-03-27",
+                "end": "2026-04-03",
+                "progress": 0,
+                "dependencies": [],
+                "phase_id": "P1"
+              },
+              {
+                "id": "A3",
+                "name": "Analizar tendencias y regulaciones",
+                "start": "2026-04-04",
+                "end": "2026-04-11",
+                "progress": 0,
+                "dependencies": [],
+                "phase_id": "P1"
+              },
+              {
+                "id": "A4",
+                "name": "Definir propuesta de valor",
+                "start": "2026-04-12",
+                "end": "2026-04-17",
+                "progress": 0,
+                "dependencies": [
+                  "A1",
+                  "A2",
+                  "A3"
+                ],
+                "phase_id": "P2"
+              },
+              {
+                "id": "A5",
+                "name": "Establecer estructura de precios",
+                "start": "2026-04-18",
+                "end": "2026-04-23",
+                "progress": 0,
+                "dependencies": [
+                  "A4"
+                ],
+                "phase_id": "P2"
+              },
+              {
+                "id": "A6",
+                "name": "Identificar fuentes de ingresos",
+                "start": "2026-04-24",
+                "end": "2026-04-29",
+                "progress": 0,
+                "dependencies": [
+                  "A4"
+                ],
+                "phase_id": "P2"
+              },
+              {
+                "id": "A7",
+                "name": "Asegurar cumplimiento normativo",
+                "start": "2026-04-30",
+                "end": "2026-05-10",
+                "progress": 0,
+                "dependencies": [
+                  "A5",
+                  "A6"
+                ],
+                "phase_id": "P3"
+              },
+              {
+                "id": "A8",
+                "name": "Definir estrategia de entrada al mercado",
+                "start": "2026-05-11",
+                "end": "2026-05-18",
+                "progress": 0,
+                "dependencies": [
+                  "A7"
+                ],
+                "phase_id": "P3"
+              },
+              {
+                "id": "A9",
+                "name": "Implementar plataforma tecnológica",
+                "start": "2026-05-19",
+                "end": "2026-06-03",
+                "progress": 0,
+                "dependencies": [
+                  "A8"
+                ],
+                "phase_id": "P4"
+              },
+              {
+                "id": "A10",
+                "name": "Diseñar plan de marketing",
+                "start": "2026-06-04",
+                "end": "2026-06-14",
+                "progress": 0,
+                "dependencies": [
+                  "A8"
+                ],
+                "phase_id": "P4"
+              },
+              {
+                "id": "A11",
+                "name": "Iniciar operaciones",
+                "start": "2026-06-15",
+                "end": "2026-06-20",
+                "progress": 0,
+                "dependencies": [
+                  "A9",
+                  "A10"
+                ],
+                "phase_id": "P5"
+              },
+              {
+                "id": "A12",
+                "name": "Analizar resultados y crecimiento",
+                "start": "2026-06-21",
+                "end": "2026-07-01",
+                "progress": 0,
+                "dependencies": [
+                  "A11"
+                ],
+                "phase_id": "P6"
+              }
+            ]
+          },
+          "summary": {
+            "executive_summary": "La propuesta de lanzamiento de una clínica digital en Panamá presenta un fuerte potencial de mercado, respaldado por un análisis financiero positivo y un marco estratégico claro. Sin embargo, se recomienda iniciar con un programa piloto para asegurar la aceptación del usuario y ajustar las operaciones según el feedback recibido.",
+            "key_findings": [
+              "Se identificaron 3 oportunidades principales.",
+              "Se identificaron 7 riesgos relevantes."
+            ],
+            "priority_actions": [
+              "Identificar necesidades del mercado",
+              "Evaluar la competencia",
+              "Analizar tendencias y regulaciones",
+              "Definir propuesta de valor",
+              "Establecer estructura de precios"
+            ]
+          },
+          "meta": {
+            "created_at": "2026-03-16T23:16:59.920Z",
+            "completed_at": "2026-03-16T23:18:51.529Z",
+            "modules_executed": [
+              "supervisor",
+              "market_intelligence",
+              "bmc",
+              "strategy",
+              "finance",
+              "risks",
+              "roadmap",
+              "verdict",
+              "activities",
+              "kanban",
+              "gantt"
+            ],
+            "modules_failed": []
+          }
+        },
+        "headers": {},
+        "statusCode": 200
+      }
+    }
+  ]

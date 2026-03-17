@@ -38,6 +38,11 @@ from .project_roadmap import ProjectRoadmap
 from .project_analisis_financiero import ProjectAnalisisFinanciero
 from .project_analisis_riesgos import ProjectAnalisisRiesgos, ProjectRiesgo
 from .project_veredicto import ProjectVeredicto
+from .analysis_request import AnalysisRequest
+from .analysis_result import AnalysisResult
+from .analysis_module import AnalysisModule
+from .analysis_activity import AnalysisActivity
+from .analysis_risk import AnalysisRisk
 
 # Lista de todos los modelos para crear tablas
 __all__ = [
@@ -96,5 +101,10 @@ __all__ = [
     "ProjectAnalisisRiesgos",
     "ProjectRiesgo",
     "ProjectVeredicto",
+    "AnalysisRequest",
+    "AnalysisResult",
+    "AnalysisModule",
+    "AnalysisActivity",
+    "AnalysisRisk",
 ]
 

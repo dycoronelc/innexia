@@ -1,0 +1,238 @@
+{
+  "name": "IASE_v5_SW_Finance_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "fe408358-8359-43b6-ae17-4e8744244120",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el Finance Agent del sistema Innexia AI Strategic Analysis Engine v5.\n\n# Objetivo\nConstruir una evaluación financiera base del proyecto.\n\n# Instrucciones\n- Genera supuestos financieros razonables si no existen datos exactos.\n- Define inversión inicial, costo operativo mensual, modelo de ingresos y proyección simple.\n- Incluye observaciones financieras útiles para toma de decisión.\n- No expliques tu razonamiento.\n- Devuelve únicamente JSON válido.\n\n# Formato de salida\n{\n  \"finance\": {\n    \"assumptions\": {\n      \"initial_investment\": 0,\n      \"monthly_operating_cost\": 0,\n      \"pricing_model\": \"\",\n      \"expected_monthly_revenue\": 0\n    },\n    \"projection_summary\": {\n      \"year_1_revenue\": 0,\n      \"year_1_cost\": 0,\n      \"estimated_margin\": 0,\n      \"payback_months\": 0\n    },\n    \"financial_observations\": []\n  }\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    finance: {\n      type: \"object\",\n      properties: {\n        assumptions: {\n          type: \"object\",\n          properties: {\n            initial_investment: { type: \"number\" },\n            monthly_operating_cost: { type: \"number\" },\n            pricing_model: { type: \"string\" },\n            expected_monthly_revenue: { type: \"number\" }\n          },\n          required: [\"initial_investment\", \"monthly_operating_cost\", \"pricing_model\", \"expected_monthly_revenue\"]\n        },\n        projection_summary: {\n          type: \"object\",\n          properties: {\n            year_1_revenue: { type: \"number\" },\n            year_1_cost: { type: \"number\" },\n            estimated_margin: { type: \"number\" },\n            payback_months: { type: \"number\" }\n          },\n          required: [\"year_1_revenue\", \"year_1_cost\", \"estimated_margin\", \"payback_months\"]\n        },\n        financial_observations: { type: \"array\", items: { type: \"string\" } }\n      },\n      required: [\"assumptions\", \"projection_summary\", \"financial_observations\"]\n    }\n  },\n  required: [\"finance\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "25ea7709-9c6a-4ce3-9055-b5c9e4259247",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "351994f9-66ff-4ce8-a251-c441c9cd3d54",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        1808
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Search the web with Tavily for fresh market, technology, vendor, regulatory, and benchmarking context when the project input would benefit from external validation. Prefer concise, relevant searches in Spanish or English depending on the input.",
+        "query": "$fromAI(\"search_query\", \"Consulta de búsqueda Tavily\", \"string\")",
+        "options": {
+          "topic": "general",
+          "search_depth": "advanced",
+          "max_results": 5,
+          "include_answer": "advanced",
+          "include_raw_content": false
+        }
+      },
+      "id": "dd7a5ee1-c980-46c7-8c7e-fa1b2ec17f26",
+      "name": "Tavily Web Search",
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        176,
+        1808
+      ],
+      "credentials": {
+        "tavilyApi": {
+          "id": "xcIywbCiXQk2Iroa",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.finance = content.finance || {};\ncontent.finance.assumptions = content.finance.assumptions || {};\ncontent.finance.assumptions.initial_investment = Number(content.finance.assumptions.initial_investment || 0);\ncontent.finance.assumptions.monthly_operating_cost = Number(content.finance.assumptions.monthly_operating_cost || 0);\ncontent.finance.assumptions.pricing_model = content.finance.assumptions.pricing_model || \"\";\ncontent.finance.assumptions.expected_monthly_revenue = Number(content.finance.assumptions.expected_monthly_revenue || 0);\n\ncontent.finance.projection_summary = content.finance.projection_summary || {};\ncontent.finance.projection_summary.year_1_revenue = Number(content.finance.projection_summary.year_1_revenue || 0);\ncontent.finance.projection_summary.year_1_cost = Number(content.finance.projection_summary.year_1_cost || 0);\ncontent.finance.projection_summary.estimated_margin = Number(content.finance.projection_summary.estimated_margin || 0);\ncontent.finance.projection_summary.payback_months = Number(content.finance.projection_summary.payback_months || 0);\n\ncontent.finance.financial_observations = Array.isArray(content.finance.financial_observations) ? content.finance.financial_observations : [];\n\nreturn [{ json: content }];"
+      },
+      "id": "223c8fc4-dc43-498d-a9da-ddd2dfbe996f",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!data.finance || typeof data.finance !== 'object') {\n  throw new Error('finance faltante o inválido');\n}\n\nif (!data.finance.assumptions || typeof data.finance.assumptions !== 'object') {\n  data.finance.assumptions = {};\n}\n\nif (!data.finance.projection_summary || typeof data.finance.projection_summary !== 'object') {\n  data.finance.projection_summary = {};\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "f0219cf1-7f26-4c88-b970-985df1f01875",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "ba3c3561-145d-4b5a-a1c0-6b94530b9861",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        16,
+        1600
+      ],
+      "id": "f684b163-9116-49dd-917b-9e0cd144cd14",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily Web Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8bc17b4c-d071-4a79-93dc-1b7de8146ba1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "4goTR5V6F6LMZTJc",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

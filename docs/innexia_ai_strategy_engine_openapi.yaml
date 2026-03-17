@@ -1,0 +1,260 @@
+
+openapi: 3.0.3
+info:
+  title: Innexia AI Strategy Engine API
+  description: |
+    API specification for the Innexia AI Strategy Engine.
+
+    This API allows applications to submit strategic ideas (e.g. "Quiero lanzar una clínica digital en Panamá")
+    and receive a full strategic analysis including:
+
+    - Market Analysis
+    - Business Model Canvas
+    - Strategy
+    - Financial Projection
+    - Risks
+    - Roadmap
+    - Execution Plan
+    - Kanban
+    - Gantt
+
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+  - url: https://api.innexia.ai
+    description: Production
+
+paths:
+
+  /api/analyze-opportunity:
+    post:
+      summary: Analyze a new strategic opportunity
+      description: Submit a new idea to the AI Strategy Engine
+      operationId: analyzeOpportunity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityRequest'
+      responses:
+        "200":
+          description: Analysis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpportunityResponse'
+
+  /api/analysis/{request_id}:
+    get:
+      summary: Get analysis result
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpportunityResponse'
+
+components:
+
+  schemas:
+
+    OpportunityRequest:
+      type: object
+      required:
+        - idea
+      properties:
+        idea:
+          type: string
+          example: Quiero lanzar una clínica digital en Panamá
+        organization:
+          type: string
+          example: Innexia
+        language:
+          type: string
+          example: es
+
+    OpportunityResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        status:
+          type: string
+        result:
+          $ref: '#/components/schemas/StrategyEngineResult'
+
+    StrategyEngineResult:
+      type: object
+      properties:
+
+        market_analysis:
+          $ref: '#/components/schemas/MarketAnalysis'
+
+        bmc:
+          $ref: '#/components/schemas/BMC'
+
+        strategy:
+          $ref: '#/components/schemas/Strategy'
+
+        finance:
+          $ref: '#/components/schemas/Finance'
+
+        risks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Risk'
+
+        roadmap:
+          $ref: '#/components/schemas/Roadmap'
+
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+
+        kanban:
+          $ref: '#/components/schemas/Kanban'
+
+        gantt:
+          $ref: '#/components/schemas/Gantt'
+
+    MarketAnalysis:
+      type: object
+      properties:
+        market_overview:
+          type: string
+        industry_trends:
+          type: array
+          items:
+            type: string
+        competitors:
+          type: array
+          items:
+            type: string
+        opportunities:
+          type: array
+          items:
+            type: string
+
+    BMC:
+      type: object
+      properties:
+        customer_segments:
+          type: array
+          items:
+            type: string
+        value_propositions:
+          type: array
+          items:
+            type: string
+        channels:
+          type: array
+          items:
+            type: string
+        revenue_streams:
+          type: array
+          items:
+            type: string
+
+    Strategy:
+      type: object
+      properties:
+        strategic_objectives:
+          type: array
+          items:
+            type: string
+        competitive_advantages:
+          type: array
+          items:
+            type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    Finance:
+      type: object
+      properties:
+        initial_investment:
+          type: number
+        monthly_operating_cost:
+          type: number
+        expected_revenue:
+          type: number
+        payback_months:
+          type: number
+
+    Risk:
+      type: object
+      properties:
+        risk_id:
+          type: string
+        title:
+          type: string
+        probability:
+          type: string
+        impact:
+          type: string
+        mitigation:
+          type: string
+
+    Roadmap:
+      type: object
+      properties:
+        phases:
+          type: array
+          items:
+            type: object
+            properties:
+              phase_id:
+                type: string
+              name:
+                type: string
+              duration_weeks:
+                type: integer
+
+    Activity:
+      type: object
+      properties:
+        activity_id:
+          type: string
+        title:
+          type: string
+        priority:
+          type: string
+        estimated_days:
+          type: integer
+        phase_id:
+          type: string
+
+    Kanban:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: object
+        cards:
+          type: array
+          items:
+            type: object
+
+    Gantt:
+      type: object
+      properties:
+        project_start:
+          type: string
+        tasks:
+          type: array
+          items:
+            type: object

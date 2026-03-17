@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 11-03-2026 a las 09:38:40
+-- Tiempo de generación: 17-03-2026 a las 09:21:20
 -- Versión del servidor: 10.6.24-MariaDB-cll-lve
 -- Versión de PHP: 8.3.30
 
@@ -142,7 +142,138 @@ CREATE TABLE `agent_memories` (
   `expires_at` datetime DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `analysis_activities`
+--
+
+CREATE TABLE `analysis_activities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `request_id` varchar(64) NOT NULL,
+  `activity_id` varchar(50) NOT NULL,
+  `epic` varchar(255) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `priority` enum('baja','media','alta','critica') DEFAULT 'media',
+  `owner_role` varchar(100) DEFAULT NULL,
+  `estimated_days` int(11) DEFAULT NULL,
+  `depends_on_json` text DEFAULT NULL,
+  `kanban_status` enum('todo','in_progress','review','done') NOT NULL DEFAULT 'todo',
+  `phase_id` varchar(50) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `sort_order` int(11) DEFAULT NULL,
+  `raw_json` longtext DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `analysis_modules`
+--
+
+CREATE TABLE `analysis_modules` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `request_id` varchar(64) NOT NULL,
+  `module_name` varchar(100) NOT NULL,
+  `module_status` enum('pending','running','completed','failed') NOT NULL DEFAULT 'completed',
+  `input_json` longtext DEFAULT NULL,
+  `output_json` longtext DEFAULT NULL,
+  `started_at` datetime DEFAULT NULL,
+  `completed_at` datetime DEFAULT NULL,
+  `error_message` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `analysis_requests`
+--
+
+CREATE TABLE `analysis_requests` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `request_id` varchar(100) NOT NULL,
+  `project_id` varchar(100) DEFAULT NULL,
+  `user_id` varchar(100) DEFAULT NULL,
+  `session_id` varchar(100) DEFAULT NULL,
+  `project_name` varchar(255) DEFAULT NULL,
+  `organization_name` varchar(255) DEFAULT NULL,
+  `analysis_type` varchar(100) NOT NULL DEFAULT 'full_strategy',
+  `language_code` varchar(10) NOT NULL DEFAULT 'es',
+  `input_message` longtext NOT NULL,
+  `input_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`input_json`)),
+  `status` varchar(50) NOT NULL DEFAULT 'queued',
+  `progress` int(11) NOT NULL DEFAULT 0,
+  `current_stage` varchar(100) DEFAULT NULL,
+  `callback_url` varchar(500) DEFAULT NULL,
+  `callback_status` varchar(50) DEFAULT NULL,
+  `callback_attempts` int(11) NOT NULL DEFAULT 0,
+  `callback_last_at` datetime DEFAULT NULL,
+  `callback_response_code` int(11) DEFAULT NULL,
+  `callback_response_body` longtext DEFAULT NULL,
+  `workflow_version` varchar(100) DEFAULT NULL,
+  `engine_version` varchar(50) DEFAULT NULL,
+  `error_code` varchar(100) DEFAULT NULL,
+  `error_message` longtext DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `completed_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `analysis_results`
+--
+
+CREATE TABLE `analysis_results` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `request_id` varchar(100) NOT NULL,
+  `result_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`result_json`)),
+  `executive_summary` longtext DEFAULT NULL,
+  `market_analysis_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`market_analysis_json`)),
+  `bmc_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`bmc_json`)),
+  `strategy_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`strategy_json`)),
+  `financial_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`financial_json`)),
+  `risks_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`risks_json`)),
+  `roadmap_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`roadmap_json`)),
+  `kanban_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`kanban_json`)),
+  `gantt_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`gantt_json`)),
+  `artifacts_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`artifacts_json`)),
+  `tokens_input` int(11) DEFAULT NULL,
+  `tokens_output` int(11) DEFAULT NULL,
+  `total_duration_seconds` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `analysis_risks`
+--
+
+CREATE TABLE `analysis_risks` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `request_id` varchar(64) NOT NULL,
+  `risk_id` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `category` varchar(100) DEFAULT NULL,
+  `probability` enum('baja','media','alta') DEFAULT 'media',
+  `impact` enum('bajo','medio','alto','critico') DEFAULT 'medio',
+  `mitigation` text DEFAULT NULL,
+  `owner` varchar(100) DEFAULT NULL,
+  `raw_json` longtext DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -206,6 +337,24 @@ CREATE TABLE `business_model_canvases` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL
 ) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `callback_logs`
+--
+
+CREATE TABLE `callback_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `request_id` varchar(100) NOT NULL,
+  `callback_url` varchar(500) NOT NULL,
+  `attempt_number` int(11) NOT NULL,
+  `request_payload` longtext DEFAULT NULL,
+  `response_code` int(11) DEFAULT NULL,
+  `response_body` longtext DEFAULT NULL,
+  `status` varchar(50) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -433,7 +582,7 @@ CREATE TABLE `document_templates` (
   `is_active` tinyint(1) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -452,7 +601,7 @@ CREATE TABLE `educational_categories` (
   `is_active` tinyint(1) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -487,7 +636,7 @@ CREATE TABLE `educational_content` (
   `bookmark_count` int(11) DEFAULT NULL,
   `rating` decimal(3,2) DEFAULT NULL,
   `rating_count` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -504,7 +653,7 @@ CREATE TABLE `educational_tags` (
   `is_active` tinyint(1) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -529,7 +678,7 @@ CREATE TABLE `external_content_sources` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -630,7 +779,7 @@ CREATE TABLE `official_documents` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -655,7 +804,7 @@ CREATE TABLE `proactive_suggestions` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `read_at` datetime DEFAULT NULL,
   `dismissed_at` datetime DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1003,7 +1152,7 @@ CREATE TABLE `recommendation_engines` (
   `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1060,7 +1209,7 @@ CREATE TABLE `suggestion_rules` (
   `priority` int(11) DEFAULT 5,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1161,7 +1310,7 @@ CREATE TABLE `user_contexts` (
   `learning_goals` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`learning_goals`)),
   `last_interaction` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1180,7 +1329,7 @@ CREATE TABLE `user_suggestion_preferences` (
   `timezone` varchar(50) DEFAULT 'UTC',
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Índices para tablas volcadas
@@ -1259,6 +1408,57 @@ ALTER TABLE `agent_memories`
   ADD KEY `idx_key` (`key`(250));
 
 --
+-- Indices de la tabla `analysis_activities`
+--
+ALTER TABLE `analysis_activities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_analysis_activities_request_activity` (`request_id`,`activity_id`),
+  ADD KEY `idx_analysis_activities_request_id` (`request_id`),
+  ADD KEY `idx_analysis_activities_phase_id` (`phase_id`),
+  ADD KEY `idx_analysis_activities_kanban_status` (`kanban_status`),
+  ADD KEY `idx_analysis_activities_priority` (`priority`),
+  ADD KEY `idx_analysis_activities_dates` (`start_date`,`end_date`);
+
+--
+-- Indices de la tabla `analysis_modules`
+--
+ALTER TABLE `analysis_modules`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_analysis_modules_request_module` (`request_id`,`module_name`),
+  ADD KEY `idx_analysis_modules_status` (`module_status`),
+  ADD KEY `idx_analysis_modules_created_at` (`created_at`);
+
+--
+-- Indices de la tabla `analysis_requests`
+--
+ALTER TABLE `analysis_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_analysis_requests_request_id` (`request_id`),
+  ADD KEY `idx_analysis_requests_status` (`status`),
+  ADD KEY `idx_analysis_requests_project_id` (`project_id`),
+  ADD KEY `idx_analysis_requests_user_id` (`user_id`),
+  ADD KEY `idx_analysis_requests_created_at` (`created_at`),
+  ADD KEY `idx_analysis_requests_callback_status` (`callback_status`);
+
+--
+-- Indices de la tabla `analysis_results`
+--
+ALTER TABLE `analysis_results`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_analysis_results_request_id` (`request_id`),
+  ADD KEY `idx_analysis_results_created_at` (`created_at`);
+
+--
+-- Indices de la tabla `analysis_risks`
+--
+ALTER TABLE `analysis_risks`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_analysis_risks_request_risk` (`request_id`,`risk_id`),
+  ADD KEY `idx_analysis_risks_category` (`category`),
+  ADD KEY `idx_analysis_risks_probability` (`probability`),
+  ADD KEY `idx_analysis_risks_impact` (`impact`);
+
+--
 -- Indices de la tabla `analytics_events`
 --
 ALTER TABLE `analytics_events`
@@ -1283,6 +1483,15 @@ ALTER TABLE `business_model_canvases`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `project_id` (`project_id`),
   ADD KEY `ix_business_model_canvases_id` (`id`);
+
+--
+-- Indices de la tabla `callback_logs`
+--
+ALTER TABLE `callback_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_callback_logs_request_id` (`request_id`),
+  ADD KEY `idx_callback_logs_status` (`status`),
+  ADD KEY `idx_callback_logs_created_at` (`created_at`);
 
 --
 -- Indices de la tabla `categories`
@@ -1731,6 +1940,36 @@ ALTER TABLE `agent_memories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `analysis_activities`
+--
+ALTER TABLE `analysis_activities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `analysis_modules`
+--
+ALTER TABLE `analysis_modules`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `analysis_requests`
+--
+ALTER TABLE `analysis_requests`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `analysis_results`
+--
+ALTER TABLE `analysis_results`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `analysis_risks`
+--
+ALTER TABLE `analysis_risks`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `analytics_events`
 --
 ALTER TABLE `analytics_events`
@@ -1747,6 +1986,12 @@ ALTER TABLE `audit_logs`
 --
 ALTER TABLE `business_model_canvases`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `callback_logs`
+--
+ALTER TABLE `callback_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `categories`
@@ -2011,10 +2256,40 @@ ALTER TABLE `user_suggestion_preferences`
 --
 
 --
+-- Filtros para la tabla `analysis_activities`
+--
+ALTER TABLE `analysis_activities`
+  ADD CONSTRAINT `fk_analysis_activities_request` FOREIGN KEY (`request_id`) REFERENCES `analysis_requests` (`request_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `analysis_modules`
+--
+ALTER TABLE `analysis_modules`
+  ADD CONSTRAINT `fk_analysis_modules_request` FOREIGN KEY (`request_id`) REFERENCES `analysis_requests` (`request_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `analysis_results`
+--
+ALTER TABLE `analysis_results`
+  ADD CONSTRAINT `fk_analysis_results_request_id` FOREIGN KEY (`request_id`) REFERENCES `analysis_requests` (`request_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `analysis_risks`
+--
+ALTER TABLE `analysis_risks`
+  ADD CONSTRAINT `fk_analysis_risks_request` FOREIGN KEY (`request_id`) REFERENCES `analysis_requests` (`request_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `business_model_canvases`
 --
 ALTER TABLE `business_model_canvases`
   ADD CONSTRAINT `fk_bmc_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `callback_logs`
+--
+ALTER TABLE `callback_logs`
+  ADD CONSTRAINT `fk_callback_logs_request_id` FOREIGN KEY (`request_id`) REFERENCES `analysis_requests` (`request_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `document_generation_logs`

@@ -1,0 +1,199 @@
+{
+  "name": "IASE_v5_SW_BMC_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f5c79701-10e7-4a2f-ad10-3e300284d16f",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el BMC Agent del sistema Innexia AI Strategic Analysis Engine v5.\n\n# Objetivo\nConstruir el Business Model Canvas del proyecto analizado, usando el input original y el context_bundle entregado por el Supervisor Agent.\n\n# Instrucciones\n- Produce un Business Model Canvas claro, realista y accionable.\n- Usa supuestos razonables cuando falten datos.\n- Prioriza claridad de negocio, diferenciación y viabilidad.\n- No expliques tu razonamiento.\n- Devuelve únicamente JSON válido.\n\n# Formato de salida\n{\n  \"bmc\": {\n    \"customer_segments\": [],\n    \"value_propositions\": [],\n    \"channels\": [],\n    \"customer_relationships\": [],\n    \"revenue_streams\": [],\n    \"key_resources\": [],\n    \"key_activities\": [],\n    \"key_partners\": [],\n    \"cost_structure\": []\n  },\n  \"positioning\": {\n    \"problem_statement\": \"\",\n    \"differentiators\": [],\n    \"fit_score\": 0,\n    \"assumptions\": []\n  }\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    bmc: {\n      type: \"object\",\n      properties: {\n        customer_segments: { type: \"array\", items: { type: \"string\" } },\n        value_propositions: { type: \"array\", items: { type: \"string\" } },\n        channels: { type: \"array\", items: { type: \"string\" } },\n        customer_relationships: { type: \"array\", items: { type: \"string\" } },\n        revenue_streams: { type: \"array\", items: { type: \"string\" } },\n        key_resources: { type: \"array\", items: { type: \"string\" } },\n        key_activities: { type: \"array\", items: { type: \"string\" } },\n        key_partners: { type: \"array\", items: { type: \"string\" } },\n        cost_structure: { type: \"array\", items: { type: \"string\" } }\n      },\n      required: [\"customer_segments\", \"value_propositions\", \"channels\", \"customer_relationships\", \"revenue_streams\", \"key_resources\", \"key_activities\", \"key_partners\", \"cost_structure\"]\n    },\n    positioning: {\n      type: \"object\",\n      properties: {\n        problem_statement: { type: \"string\" },\n        differentiators: { type: \"array\", items: { type: \"string\" } },\n        fit_score: { type: \"number\" },\n        assumptions: { type: \"array\", items: { type: \"string\" } }\n      },\n      required: [\"problem_statement\", \"differentiators\", \"fit_score\", \"assumptions\"]\n    }\n  },\n  required: [\"bmc\", \"positioning\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "b30c460e-ca13-4dd5-b5d4-95129d222d11",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "54e21c3a-3ab0-4e7f-b75c-e4a0edcd2146",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        1328
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.bmc = content.bmc || {};\ncontent.bmc.customer_segments = Array.isArray(content.bmc.customer_segments) ? content.bmc.customer_segments : [];\ncontent.bmc.value_propositions = Array.isArray(content.bmc.value_propositions) ? content.bmc.value_propositions : [];\ncontent.bmc.channels = Array.isArray(content.bmc.channels) ? content.bmc.channels : [];\ncontent.bmc.customer_relationships = Array.isArray(content.bmc.customer_relationships) ? content.bmc.customer_relationships : [];\ncontent.bmc.revenue_streams = Array.isArray(content.bmc.revenue_streams) ? content.bmc.revenue_streams : [];\ncontent.bmc.key_resources = Array.isArray(content.bmc.key_resources) ? content.bmc.key_resources : [];\ncontent.bmc.key_activities = Array.isArray(content.bmc.key_activities) ? content.bmc.key_activities : [];\ncontent.bmc.key_partners = Array.isArray(content.bmc.key_partners) ? content.bmc.key_partners : [];\ncontent.bmc.cost_structure = Array.isArray(content.bmc.cost_structure) ? content.bmc.cost_structure : [];\n\ncontent.positioning = content.positioning || {};\ncontent.positioning.problem_statement = content.positioning.problem_statement || \"\";\ncontent.positioning.differentiators = Array.isArray(content.positioning.differentiators) ? content.positioning.differentiators : [];\ncontent.positioning.fit_score = typeof content.positioning.fit_score === 'number' ? content.positioning.fit_score : 0;\ncontent.positioning.assumptions = Array.isArray(content.positioning.assumptions) ? content.positioning.assumptions : [];\n\nreturn [{ json: content }];"
+      },
+      "id": "6c317aa7-861b-4111-9c57-6111180778a4",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!data.bmc || typeof data.bmc !== 'object') {\n  throw new Error('bmc faltante o inválido');\n}\n\nif (!data.positioning || typeof data.positioning !== 'object') {\n  throw new Error('positioning faltante o inválido');\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "29c7492e-d686-4803-a798-2677753818b1",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "6df0f008-0aab-4ff0-a036-eadc775136d7",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        304,
+        1120
+      ],
+      "id": "ff5cbe64-3078-4d4a-9190-3fa8cb85894d",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "cffc40c8-2d2f-47b4-af81-988371fdf742",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "pfnK8JonWk3XGlc1",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

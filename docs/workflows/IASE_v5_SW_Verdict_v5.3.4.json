@@ -1,0 +1,199 @@
+{
+  "name": "IASE_v5_SW_Verdict_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ccc16f3e-a9dc-4cd2-abe8-25c40e8b00d6",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        112,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el Verdict Agent del sistema Innexia AI Strategic Analysis Engine v5.\n\n# Objetivo\nEmitir un veredicto ejecutivo basado en los outputs de BMC, Strategy, Finance y Risks.\n\n# Instrucciones\n- Tu decisión debe estar basada en los insumos recibidos.\n- Las decisiones permitidas son:\n  - avanzar\n  - avanzar_con_piloto\n  - rediseñar_antes_de_avanzar\n  - no_avanzar_por_ahora\n- Debes incluir razones y condiciones para proceder.\n- No expliques tu razonamiento.\n- Devuelve únicamente JSON válido.\n\n# Formato de salida\n{\n  \"verdict\": {\n    \"decision\": \"\",\n    \"confidence\": 0,\n    \"reasons\": [],\n    \"conditions_to_proceed\": [],\n    \"executive_summary\": \"\"\n  }\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    verdict: {\n      type: \"object\",\n      properties: {\n        decision: { type: \"string\" },\n        confidence: { type: \"number\" },\n        reasons: { type: \"array\", items: { type: \"string\" } },\n        conditions_to_proceed: { type: \"array\", items: { type: \"string\" } },\n        executive_summary: { type: \"string\" }\n      },\n      required: [\"decision\", \"confidence\", \"reasons\", \"conditions_to_proceed\", \"executive_summary\"]\n    }\n  },\n  required: [\"verdict\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "0f167c50-449c-4369-8a97-28ea4ddd83c2",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "611cd23d-1a6f-4175-9dee-d8222903bec2",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        1584
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.verdict = content.verdict || {};\ncontent.verdict.decision = content.verdict.decision || \"\";\ncontent.verdict.confidence = typeof content.verdict.confidence === 'number' ? content.verdict.confidence : 0;\ncontent.verdict.reasons = Array.isArray(content.verdict.reasons) ? content.verdict.reasons : [];\ncontent.verdict.conditions_to_proceed = Array.isArray(content.verdict.conditions_to_proceed) ? content.verdict.conditions_to_proceed : [];\ncontent.verdict.executive_summary = content.verdict.executive_summary || \"\";\n\nreturn [{ json: content }];"
+      },
+      "id": "93f354ed-6a08-4b53-90cd-c90a422b5b94",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!data.verdict || typeof data.verdict !== 'object') {\n  throw new Error('verdict faltante o inválido');\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "edf9881b-a707-46cd-a4e1-f37494d926d3",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "9c016f66-ff09-45aa-b4f5-25153a1f191f",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        560,
+        1328
+      ],
+      "id": "b52304b0-37f0-44cc-984a-513f077daab4",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0584656f-b896-46b0-890b-78010ffe22ba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "9rtiMpY5K01VuB8a",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

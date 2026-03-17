@@ -1,0 +1,238 @@
+{
+  "name": "IASE_v5_SW_Strategy_v5.3.4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ed0836e2-f5c5-400f-9acf-ec9e145751b8",
+      "name": "When executed by parent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        1840
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `# Rol\nEres el Strategy Agent del sistema Innexia AI Strategic Analysis Engine v5.2 Enterprise.\n\n# Objetivo\nTransformar el contexto del proyecto, el análisis de mercado y el BMC en una tesis estratégica clara.\n\n# Instrucciones\n- Usa market_analysis como input prioritario junto con el resto del contexto.\n- Genera un SWOT resumido y útil.\n- Define objetivos estratégicos.\n- Identifica ventajas competitivas.\n- Identifica factores críticos de éxito.\n- Produce recomendaciones accionables.\n- Usa Tavily solo si el input requiere validación externa, benchmarking, regulación, mercado, competencia, tendencias o proveedores.\n- No expliques tu razonamiento.\n- Devuelve únicamente JSON válido.\n\n# Formato de salida\n{\n  \"strategy\": {\n    \"swot\": {\n      \"strengths\": [],\n      \"weaknesses\": [],\n      \"opportunities\": [],\n      \"threats\": []\n    },\n    \"strategic_objectives\": [],\n    \"competitive_advantages\": [],\n    \"critical_success_factors\": [],\n    \"strategic_recommendations\": [],\n    \"assumptions\": []\n  }\n}\n\n# Regla final\nDevuelve únicamente JSON válido.`;\n\nconst userPayload = JSON.stringify(input);\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    strategy: {\n      type: \"object\",\n      properties: {\n        swot: {\n          type: \"object\",\n          properties: {\n            strengths: { type: \"array\", items: { type: \"string\" } },\n            weaknesses: { type: \"array\", items: { type: \"string\" } },\n            opportunities: { type: \"array\", items: { type: \"string\" } },\n            threats: { type: \"array\", items: { type: \"string\" } }\n          },\n          required: [\"strengths\", \"weaknesses\", \"opportunities\", \"threats\"]\n        },\n        strategic_objectives: { type: \"array\", items: { type: \"string\" } },\n        competitive_advantages: { type: \"array\", items: { type: \"string\" } },\n        critical_success_factors: { type: \"array\", items: { type: \"string\" } },\n        strategic_recommendations: { type: \"array\", items: { type: \"string\" } },\n        assumptions: { type: \"array\", items: { type: \"string\" } }\n      },\n      required: [\"swot\", \"strategic_objectives\", \"competitive_advantages\", \"critical_success_factors\", \"strategic_recommendations\", \"assumptions\"]\n    }\n  },\n  required: [\"strategy\"]\n};\n\nreturn [{ json: { input, system_prompt: systemPrompt, user_payload: userPayload, output_schema: outputSchema } }];"
+      },
+      "id": "fa05a617-a7ca-46cb-97fe-aebd1d3b5e60",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        1840
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "f213fbc9-fa25-4510-ac94-75da51978e6a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        2096
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Search the web with Tavily for fresh market, technology, vendor, regulatory, and benchmarking context when the project input would benefit from external validation. Prefer concise, relevant searches in Spanish or English depending on the input.",
+        "query": "$fromAI(\"search_query\", \"Consulta de búsqueda Tavily\", \"string\")",
+        "options": {
+          "topic": "general",
+          "search_depth": "advanced",
+          "max_results": 5,
+          "include_answer": "advanced",
+          "include_raw_content": false
+        }
+      },
+      "id": "8c9d19af-b880-4493-8458-2b4896cf1aa3",
+      "name": "Tavily Web Search",
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        592,
+        2096
+      ],
+      "credentials": {
+        "tavilyApi": {
+          "id": "xcIywbCiXQk2Iroa",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.strategy = content.strategy || {};\ncontent.strategy.swot = content.strategy.swot || {};\ncontent.strategy.swot.strengths = Array.isArray(content.strategy.swot.strengths) ? content.strategy.swot.strengths : [];\ncontent.strategy.swot.weaknesses = Array.isArray(content.strategy.swot.weaknesses) ? content.strategy.swot.weaknesses : [];\ncontent.strategy.swot.opportunities = Array.isArray(content.strategy.swot.opportunities) ? content.strategy.swot.opportunities : [];\ncontent.strategy.swot.threats = Array.isArray(content.strategy.swot.threats) ? content.strategy.swot.threats : [];\ncontent.strategy.strategic_objectives = Array.isArray(content.strategy.strategic_objectives) ? content.strategy.strategic_objectives : [];\ncontent.strategy.competitive_advantages = Array.isArray(content.strategy.competitive_advantages) ? content.strategy.competitive_advantages : [];\ncontent.strategy.critical_success_factors = Array.isArray(content.strategy.critical_success_factors) ? content.strategy.critical_success_factors : [];\ncontent.strategy.strategic_recommendations = Array.isArray(content.strategy.strategic_recommendations) ? content.strategy.strategic_recommendations : [];\ncontent.strategy.assumptions = Array.isArray(content.strategy.assumptions) ? content.strategy.assumptions : [];\n\nreturn [{ json: content }];"
+      },
+      "id": "e57e12c0-7553-4228-bddd-1cbdc7d1e373",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        1840
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!data.strategy || typeof data.strategy !== 'object') {\n  throw new Error('strategy faltante o inválido');\n}\n\nif (!data.strategy.swot || typeof data.strategy.swot !== 'object') {\n  throw new Error('strategy.swot faltante o inválido');\n}\n\nreturn [{ json: data }];"
+      },
+      "id": "edad7f3f-fad8-4fbf-bc91-fea6fe9f0d33",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        1840
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json }];"
+      },
+      "id": "e0beccc6-a2b0-4d57-a2c2-68ab52bd38ca",
+      "name": "Return Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        1840
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.user_payload) }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        432,
+        1840
+      ],
+      "id": "56c55feb-d057-4425-b5d2-6ba8340e4aef",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When executed by parent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Return Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily Web Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "372913a5-5eec-42eb-8b9b-cbe5b2ab18f7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "CX1S6dHu13SOpdZv",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

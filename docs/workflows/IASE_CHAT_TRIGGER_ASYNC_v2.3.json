@@ -1,0 +1,355 @@
+{
+  "name": "IASE_CHAT_TRIGGER_ASYNC_v2.3",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const src = $json.body ?? $json;\n\nfunction generateSessionId() {\n  const ts = Date.now().toString(36);\n  const rnd = Math.random().toString(36).slice(2, 10);\n  return `SES-${ts}-${rnd}`.toUpperCase();\n}\n\nlet message =\n  src.chatInput ||\n  src.message ||\n  src.text ||\n  src.prompt ||\n  src.userMessage ||\n  src.input ||\n  src.query ||\n  src.lastMessage ||\n  '';\n\nconst historyRaw =\n  src.history ||\n  src.chatHistory ||\n  src.messages ||\n  src.conversation ||\n  [];\n\nconst history = Array.isArray(historyRaw) ? historyRaw : [];\n\nif (!message && Array.isArray(src.messages) && src.messages.length > 0) {\n  const lastUserMessage = [...src.messages].reverse().find(\n    m => (m.role === 'user' || m.type === 'human' || m.sender === 'user') && (m.content || m.text)\n  );\n  message = lastUserMessage?.content || lastUserMessage?.text || '';\n}\n\nconst sessionId =\n  src.sessionId ||\n  src.session_id ||\n  src.conversationId ||\n  src.chatId ||\n  src.threadId ||\n  generateSessionId();\n\nconst userId =\n  src.userId ||\n  src.user_id ||\n  src.senderId ||\n  src.customerId ||\n  src.contactId ||\n  null;\n\nconst language =\n  src.language ||\n  src.locale ||\n  'es';\n\nconst organization =\n  src.organization ||\n  src.org ||\n  'Innexia';\n\nconst projectId =\n  src.projectId ||\n  src.project_id ||\n  null;\n\nconst currentProjectContext =\n  src.currentProjectContext ||\n  src.current_project_context ||\n  null;\n\nconst action =\n  src.action ||\n  'sendMessage';\n\nreturn [\n  {\n    json: {\n      action,\n      session_id: sessionId,\n      user_id: userId,\n      language,\n      organization,\n      project_id: projectId,\n      message,\n      history,\n      current_project_context: currentProjectContext,\n      source: 'chat_trigger',\n      received_at: new Date().toISOString(),\n      raw_input: src\n    }\n  }\n];"
+      },
+      "id": "441b5492-e370-43c0-9872-ecf0d12f688b",
+      "name": "Normalize Chat Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1184,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `\n# Rol\nEres el Intent & Context Resolver del sistema Innexia AI Strategy Engine.\n\n# Objetivo\nInterpretar el mensaje libre del usuario dentro de un chat de la aplicación de Innexia y traducirlo a un brief estructurado para el engine estratégico.\n\n# Instrucciones\n- Detecta si el usuario quiere un análisis completo nuevo, una mejora de un negocio existente, o un análisis parcial.\n- Define el scope recomendado.\n- Sugiere qué módulos del engine deben correr.\n- Si el usuario pide algo como roadmap estratégico, evita correr módulos innecesarios.\n- Debes decidir si el mensaje ya tiene suficiente contexto para ejecutar el engine estratégico.\n- Sé pragmático: si falta información, haz supuestos razonables.\n- Devuelve únicamente JSON válido.\n- No incluyas markdown.\n- No incluyas texto fuera del JSON.\n\n# Decisiones válidas\nintent:\n- greeting\n- small_talk\n- ambiguous_request\n- new_analysis\n- refine_existing_project\n- update_existing_analysis\n- module_only\n\nanalysis_scope:\n- none\n- full\n- market_only\n- bmc_only\n- strategy_only\n- finance_only\n- risks_only\n- roadmap_only\n- execution_only\n\nanalysis_type:\n- \"\"\n- new_business\n- existing_business\n- product\n- internal_initiative\n- client_project\n\n# Reglas para readiness\n- Si es un saludo o small talk:\n  - intent = \"greeting\" o \"small_talk\"\n  - is_ready_for_engine = false\n  - followup_question = una invitación breve para que el usuario explique qué quiere analizar\n- Si la solicitud es demasiado ambigua:\n  - intent = \"ambiguous_request\"\n  - is_ready_for_engine = false\n  - followup_question = una sola pregunta breve y útil\n- Solo marca is_ready_for_engine = true si ya existe suficiente contexto práctico para analizar una oportunidad, negocio existente o módulo estratégico específico.\n- No pidas demasiados detalles; basta con que exista una idea o necesidad concreta con la que el engine pueda trabajar.\n\n# Regla crítica para recommended_modules\nCuando generes recommended_modules, usa únicamente estos nombres válidos:\n- market_intelligence\n- bmc\n- strategy\n- finance\n- risks\n- roadmap\n- verdict\n- activities\n\nNo uses sinónimos ni variantes como:\n- execution\n- execution_plan\n- market_analysis\n- business_model_canvas\n- strategic_planning\n- strategy_design\n- financial_forecast\n- financial_projection\n- risk_assessment\n- roadmap_plan\n\n# Formato de salida\n{\n  \"intent\": \"\",\n  \"analysis_scope\": \"\",\n  \"analysis_type\": \"\",\n  \"project_name\": \"\",\n  \"user_goal\": \"\",\n  \"requires_followup\": false,\n  \"is_ready_for_engine\": false,\n  \"followup_question\": \"\",\n  \"missing_info\": [],\n  \"recommended_modules\": [],\n  \"normalized_brief\": {\n    \"title\": \"\",\n    \"description\": \"\",\n    \"objective\": \"\",\n    \"problem_statement\": \"\",\n    \"constraints\": []\n  }\n}\n\n# Regla final\nDevuelve únicamente JSON válido.\n`.trim();\n\nconst userPayload = {\n  session_id: input.session_id,\n  user_id: input.user_id,\n  language: input.language,\n  organization: input.organization,\n  project_id: input.project_id,\n  message: input.message,\n  history: input.history || [],\n  current_project_context: input.current_project_context || null,\n  received_at: input.received_at,\n  source: input.source\n};\n\nconst outputSchema = {\n  type: \"object\",\n  properties: {\n    intent: { type: \"string\" },\n    analysis_scope: { type: \"string\" },\n    analysis_type: { type: \"string\" },\n    project_name: { type: \"string\" },\n    user_goal: { type: \"string\" },\n    requires_followup: { type: \"boolean\" },\n    is_ready_for_engine: { type: \"boolean\" },\n    followup_question: { type: \"string\" },\n    missing_info: {\n      type: \"array\",\n      items: { type: \"string\" }\n    },\n    recommended_modules: {\n      type: \"array\",\n      items: { \n        type: \"string\",\n        enum: [\"market_intelligence\",\"bmc\",\"strategy\",\"finance\",\"risks\",\"roadmap\",\"verdict\",\"activities\"]\n      }\n    },\n    normalized_brief: {\n      type: \"object\",\n      properties: {\n        title: { type: \"string\" },\n        description: { type: \"string\" },\n        objective: { type: \"string\" },\n        problem_statement: { type: \"string\" },\n        constraints: {\n          type: \"array\",\n          items: { type: \"string\" }\n        }\n      },\n      required: [\"title\", \"description\", \"objective\", \"problem_statement\", \"constraints\"]\n    }\n  },\n  required: [\n    \"intent\",\n    \"analysis_scope\",\n    \"analysis_type\",\n    \"project_name\",\n    \"user_goal\",\n    \"requires_followup\",\n    \"is_ready_for_engine\",\n    \"followup_question\",\n    \"missing_info\",\n    \"recommended_modules\",\n    \"normalized_brief\"\n  ]\n};\n\nreturn [\n  {\n    json: {\n      ...input,\n      system_prompt: systemPrompt,\n      user_payload: JSON.stringify(userPayload),\n      output_schema: outputSchema\n    }\n  }\n];"
+      },
+      "id": "baf45518-6cf3-4008-842c-ac37104cab88",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1024,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1-mini",
+        "options": {}
+      },
+      "id": "e78cf328-c7b8-4e7d-8346-289b1108c9c1",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        272
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1R1it0eEi8fboD41",
+          "name": "OpenAi Innexia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.text ?? $json.output ?? $json;\n\nif (typeof content === 'string') {\n  content = content.trim();\n\n  if (content.startsWith('```')) {\n    content = content\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/, '')\n      .replace(/```$/, '')\n      .trim();\n  }\n\n  content = JSON.parse(content);\n}\n\nif (content && typeof content === 'object' && content.__structured__output__object) {\n  content = content.__structured__output__object;\n}\n\ncontent.intent = content.intent || \"\";\ncontent.analysis_scope = content.analysis_scope || \"none\";\ncontent.analysis_type = content.analysis_type || \"new_business\";\ncontent.project_name = content.project_name || \"\";\ncontent.user_goal = content.user_goal || \"\";\ncontent.requires_followup = typeof content.requires_followup === 'boolean' ? content.requires_followup : false;\ncontent.is_ready_for_engine = typeof content.is_ready_for_engine === 'boolean' ? content.is_ready_for_engine : false;\ncontent.followup_question = content.followup_question || \"\";\ncontent.missing_info = Array.isArray(content.missing_info) ? content.missing_info : [];\ncontent.recommended_modules = Array.isArray(content.recommended_modules) ? content.recommended_modules : [];\n\ncontent.normalized_brief = content.normalized_brief || {};\ncontent.normalized_brief.title = content.normalized_brief.title || content.project_name || \"\";\ncontent.normalized_brief.description = content.normalized_brief.description || \"\";\ncontent.normalized_brief.objective = content.normalized_brief.objective || content.user_goal || \"\";\ncontent.normalized_brief.problem_statement = content.normalized_brief.problem_statement || content.normalized_brief.description || \"\";\ncontent.normalized_brief.constraints = Array.isArray(content.normalized_brief.constraints)\n  ? content.normalized_brief.constraints\n  : [];\n\nreturn [{ json: content }];"
+      },
+      "id": "7aa2472b-e0fc-4a5b-adaa-0bc031c9fe47",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize Chat Input').first().json;\nconst intent = $json;\nfunction generateRequestId(sessionId) {\n  const shortSession = (sessionId || 'NOSESSION').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);\n  const ts = Date.now().toString(36);\n  const rnd = Math.random().toString(36).substring(2, 8);\n  return `REQ-${shortSession}-${ts}-${rnd}`.toUpperCase();\n}\nconst moduleMap = { market_analysis:'market_intelligence', business_model_canvas:'bmc', strategy_design:'strategy', strategic_planning:'strategy', financial_projection:'finance', financial_forecast:'finance', risk_assessment:'risks', roadmap_plan:'roadmap', execution_plan:'activities', execution:'activities', market_intelligence:'market_intelligence', bmc:'bmc', strategy:'strategy', finance:'finance', risks:'risks', roadmap:'roadmap', verdict:'verdict', activities:'activities' };\nconst allowedModules = ['market_intelligence','bmc','strategy','finance','risks','roadmap','verdict','activities'];\nlet recommendedModules = Array.isArray(intent.recommended_modules) && intent.recommended_modules.length ? intent.recommended_modules.map(m => moduleMap[m] || m) : ['market_intelligence','bmc','strategy','roadmap','finance','risks','verdict','activities'];\nrecommendedModules = [...new Set(recommendedModules)].filter(m => allowedModules.includes(m));\nif (!recommendedModules.includes('verdict')) recommendedModules.push('verdict');\nif (intent.analysis_scope === 'full' && !recommendedModules.includes('activities')) recommendedModules.push('activities');\nif (intent.analysis_scope === 'full' && !recommendedModules.includes('roadmap')) recommendedModules.push('roadmap');\nconst projectName = intent.project_name || intent.normalized_brief?.title || normalized.current_project_context?.name || 'Innexia Strategic Opportunity';\nconst callbackUrl = normalized.raw_input?.callback_url || normalized.raw_input?.callbackUrl || 'https://REPLACE_WITH_FASTAPI_HOST/api/v1/callbacks/strategy';\nconst payload = {\n  request_id: generateRequestId(normalized.session_id),\n  project_id: normalized.project_id || null,\n  project_name: projectName,\n  analysis_type: intent.analysis_type || 'new_business',\n  language: normalized.language || 'es',\n  organization: { name: normalized.organization || 'Innexia', industry: 'tecnologia y salud', country: 'Panama' },\n  input_brief: {\n    title: intent.normalized_brief?.title || projectName,\n    description: intent.normalized_brief?.description || normalized.message,\n    objective: intent.normalized_brief?.objective || intent.user_goal || 'Generar análisis estratégico',\n    problem_statement: intent.normalized_brief?.problem_statement || normalized.message,\n    constraints: intent.normalized_brief?.constraints || []\n  },\n  execution_options: { run_modules: recommendedModules, generate_kanban: true, generate_gantt: true, persist_outputs: true, strict_json: true },\n  chat_context: {\n    session_id: normalized.session_id, user_id: normalized.user_id, project_id: normalized.project_id || null,\n    action: normalized.action || 'sendMessage', original_message: normalized.message, history: normalized.history || [],\n    current_project_context: normalized.current_project_context || null, intent: intent.intent, analysis_scope: intent.analysis_scope,\n    user_goal: intent.user_goal, requires_followup: intent.requires_followup, missing_info: intent.missing_info || []\n  },\n  callback_url: callbackUrl,\n  meta: { workflow_version: 'v2.3-chat-trigger-async', source: normalized.source || 'chat_trigger_gateway', session_id: normalized.session_id, user_id: normalized.user_id, created_at: new Date().toISOString() }\n};\nreturn [{ json: payload }];"
+      },
+      "id": "3b3ac4c0-1ba9-48bf-8f16-e90b6a6805f6",
+      "name": "Build Engine Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://innexia.app.n8n.cloud/webhook/innexia-chat-submit-async-v2-3",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "43caefca-2885-4db9-88c2-888edd0f3d4e",
+      "name": "Call Async Orchestrator Webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const asyncResult = $json.body ?? $json;\nconst root = $('Normalize Chat Input').first().json;\nconst intent = $('Parse JSON').first().json;\nconst enginePayload = $('Build Engine Payload').first().json;\nconst requestId = asyncResult.request_id || enginePayload.request_id || null;\nconst projectName = enginePayload.project_name || intent.project_name || 'tu iniciativa';\nlet assistantMessage = `Perfecto. Ya puse en cola el análisis estratégico para ${projectName}. En cuanto esté listo, el sistema podrá recuperar el resultado con el request ID ${requestId}.`;\nif (intent.analysis_scope === 'roadmap_only') assistantMessage = `Perfecto. Ya puse en cola el roadmap estratégico para ${projectName}. Request ID: ${requestId}.`;\nelse if (intent.analysis_scope === 'strategy_only') assistantMessage = `Perfecto. Ya puse en cola la propuesta estratégica para ${projectName}. Request ID: ${requestId}.`;\nelse if (intent.analysis_scope === 'finance_only') assistantMessage = `Perfecto. Ya puse en cola el análisis financiero para ${projectName}. Request ID: ${requestId}.`;\nreturn [{ json: { session_id: root.session_id, user_id: root.user_id, request_id: requestId, status: 'queued', source: root.source || 'chat_trigger', action: root.action || 'sendMessage', intent: intent.intent || null, analysis_scope: intent.analysis_scope || null, assistant_message: assistantMessage, suggested_next_actions: ['Consultar estado por request_id','Esperar callback del sistema','Recuperar resultado cuando finalice'], dashboard_payload: { request_id: requestId, project_name: projectName, queue_status: asyncResult.status || 'queued' } } }];"
+      },
+      "id": "5a58a438-228c-4218-b422-f85c9d934133",
+      "name": "Build Async Ack Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1376,
+        48
+      ],
+      "id": "b2ba9a0b-a3c3-4719-9f7e-988ea5fd31bc",
+      "name": "When chat message received",
+      "webhookId": "3152a657-84c8-46e6-8c99-bf7c0997b124"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.user_payload }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -848,
+        48
+      ],
+      "id": "ef47a613-e212-4957-af53-174d002b85be",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Prepare Prompt').item.json.session_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -736,
+        288
+      ],
+      "id": "0ef9d1f1-8e66-4858-82f4-a9e004d93da9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nif (!data.intent || typeof data.intent !== 'string') {\n  throw new Error('intent faltante o inválido');\n}\n\nif (typeof data.is_ready_for_engine !== 'boolean') {\n  throw new Error('is_ready_for_engine faltante o inválido');\n}\n\nif (typeof data.followup_question !== 'string') {\n  throw new Error('followup_question faltante o inválido');\n}\n\ndata.missing_info = Array.isArray(data.missing_info) ? data.missing_info : [];\ndata.recommended_modules = Array.isArray(data.recommended_modules) ? data.recommended_modules : [];\n\ndata.normalized_brief = data.normalized_brief || {};\ndata.normalized_brief.title = data.normalized_brief.title || \"\";\ndata.normalized_brief.description = data.normalized_brief.description || \"\";\ndata.normalized_brief.objective = data.normalized_brief.objective || \"\";\ndata.normalized_brief.problem_statement = data.normalized_brief.problem_statement || \"\";\ndata.normalized_brief.constraints = Array.isArray(data.normalized_brief.constraints)\n  ? data.normalized_brief.constraints\n  : [];\n\nreturn [{ json: data }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        48
+      ],
+      "id": "68336ed8-4cbb-4dfc-a6fb-f5c20eda3319",
+      "name": "Validate Output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "216aaae1-badf-40af-9ac5-f9f5e5d37ab7",
+              "leftValue": "={{ $json.is_ready_for_engine }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0ea5aa7e-a7bb-49c1-afad-de9ecf0b1bf0",
+      "name": "Should Call Master?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const root = $('Normalize Chat Input').first().json;\nconst intent = $json;\n\nlet assistantMessage =\n  intent.followup_question ||\n  \"Cuéntame un poco más sobre la idea, negocio o iniciativa que quieres analizar.\";\n\nif (intent.intent === 'greeting' || intent.intent === 'small_talk') {\n  assistantMessage = \"¡Hola! Cuéntame qué idea, negocio o iniciativa quieres analizar y te ayudo a estructurarla.\";\n}\n\nreturn [\n  {\n    json: {\n      session_id: root.session_id,\n      user_id: root.user_id,\n      status: \"waiting_for_more_context\",\n      source: root.source || \"chat_trigger\",\n      action: root.action || \"sendMessage\",\n      intent: intent.intent || null,\n      analysis_scope: intent.analysis_scope || null,\n      assistant_message: assistantMessage,\n      suggested_next_actions: [],\n      dashboard_payload: null\n    }\n  }\n];"
+      },
+      "id": "e058fcc6-4c16-48f0-9542-4df8b5fc3629",
+      "name": "Build Followup Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        224
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Normalize Chat Input": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Engine Payload": {
+      "main": [
+        [
+          {
+            "node": "Call Async Orchestrator Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Normalize Chat Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Should Call Master?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Call Master?": {
+      "main": [
+        [
+          {
+            "node": "Build Engine Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Followup Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "998ee076-d0c7-4c68-87aa-109a648d460b",
+  "meta": {
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "Ud4Vuu4Ybc3iyBgZ",
+  "tags": [
+    {
+      "updatedAt": "2026-03-13T12:58:43.774Z",
+      "createdAt": "2026-03-13T12:58:43.774Z",
+      "id": "REGEyW1C5Xa8xIW5",
+      "name": "iase"
+    }
+  ]
+}

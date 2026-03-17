@@ -1,0 +1,730 @@
+{
+  "name": "IASE_v5_CORE_v2.3",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "fbc8d093-5d5f-4dad-8eb8-12c04f21e9de",
+      "name": "Execute Sub-workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\n\nconst requestId =\n  body.request_id ||\n  body.engine_payload?.request_id ||\n  body.chat_request?.request_id ||\n  crypto.randomUUID();\n\nconst chatMessage =\n  body.message ||\n  body.chat_request?.message ||\n  body.prompt ||\n  body.idea ||\n  body.description ||\n  body.input_brief?.description ||\n  '';\n\nconst inferredTitle =\n  body.project_name ||\n  body.engine_payload?.project_name ||\n  body.chat_request?.project_name ||\n  (chatMessage ? chatMessage.slice(0, 80) : 'Innexia AI Strategy Engine Opportunity');\n\nconst incomingMeta = body.meta || {};\nconst incomingOrg = body.organization || body.engine_payload?.organization || {};\nconst incomingExecution = body.execution_options || body.engine_payload?.execution_options || {};\nconst incomingBrief = body.input_brief || body.engine_payload?.input_brief || {};\n\nreturn [{\n  json: {\n    request_id: requestId,\n    project_name: inferredTitle,\n    analysis_type: body.analysis_type || body.engine_payload?.analysis_type || 'new_business',\n    language: body.language || body.engine_payload?.language || 'es',\n    organization: {\n      name: incomingOrg.name || 'Innexia',\n      industry: incomingOrg.industry || 'tecnologia y salud',\n      country: incomingOrg.country || 'Panama'\n    },\n    input_brief: {\n      title: incomingBrief.title || inferredTitle,\n      description: incomingBrief.description || chatMessage,\n      objective: incomingBrief.objective || body.objective || 'Evaluar viabilidad y diseñar estrategia de lanzamiento',\n      problem_statement: incomingBrief.problem_statement || chatMessage || 'Analizar una nueva oportunidad de negocio o iniciativa estratégica',\n      constraints: incomingBrief.constraints || body.constraints || []\n    },\n    context_sources: body.context_sources || body.engine_payload?.context_sources || { use_tavily: true, use_internal_context: false },\n    execution_options: {\n      run_modules: incomingExecution.run_modules || ['market_intelligence','bmc','strategy','roadmap','finance','risks','verdict','activities'],\n      generate_kanban: incomingExecution.generate_kanban ?? true,\n      generate_gantt: incomingExecution.generate_gantt ?? true,\n      persist_outputs: incomingExecution.persist_outputs ?? true,\n      strict_json: incomingExecution.strict_json ?? true\n    },\n    chat_context: body.chat_context || {\n      session_id: body.session_id || body.chat_request?.session_id || null,\n      user_id: body.user_id || body.chat_request?.user_id || null,\n      conversation_summary: body.conversation_summary || null,\n      original_message: chatMessage,\n      intent: body.intent || null,\n      analysis_scope: body.analysis_scope || null\n    },\n    meta: {\n      workflow_version: 'v5.3-enterprise',\n      source: incomingMeta.source || body.source || 'chat_gateway',\n      created_at: incomingMeta.created_at || new Date().toISOString(),\n      session_id: incomingMeta.session_id || body.session_id || null,\n      user_id: incomingMeta.user_id || body.user_id || null\n    }\n  }\n}];"
+      },
+      "id": "3d8683d9-0610-4b85-90ac-0b73a223e7ba",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1152,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "Q7QcChf3BaLn0Ied",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Q7QcChf3BaLn0Ied",
+          "cachedResultName": "IASE_v5_SW_Supervisor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "99414cf4-2181-4626-96ed-32770808a6cb",
+      "name": "Run Supervisor",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -976,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "ec631f1b-3008-4d4d-9102-4d0779d47fa8",
+      "name": "Merge Input + Supervisor",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -800,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "81O7spAegADp62mv",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/81O7spAegADp62mv",
+          "cachedResultName": "IASE_v5_SW_Market_Intelligence"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "82a06a1c-9e06-47e4-b3e7-90ca3f2782e5",
+      "name": "Run Market Intelligence",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -608,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const root = $('Normalize Input').first().json;\nconst supervisor = $('Run Supervisor').first().json;\nconst market_analysis = $('Run Market Intelligence').first().json;\nreturn [{json:{...root, supervisor, market_analysis}}];"
+      },
+      "id": "036d06cb-fb22-4ec2-943d-dadb695aba67",
+      "name": "Assemble Core Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "pfnK8JonWk3XGlc1",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pfnK8JonWk3XGlc1",
+          "cachedResultName": "IASE_v5_SW_BMC_v5.3.4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "ca417bce-77d5-4d8d-a3e7-46a03f7e7076",
+      "name": "Run BMC",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "CX1S6dHu13SOpdZv",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CX1S6dHu13SOpdZv",
+          "cachedResultName": "IASE_v5_SW_Strategy_v5.3.4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "84e6671f-2444-4472-8edb-666dd49b6740",
+      "name": "Run Strategy",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "4goTR5V6F6LMZTJc",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/4goTR5V6F6LMZTJc",
+          "cachedResultName": "IASE_v5_SW_Finance_v5.3.4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "c998ac23-142d-40b5-badb-210dd2e887d2",
+      "name": "Run Finance",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "UAWNZ5kZ7uzsFFZO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/UAWNZ5kZ7uzsFFZO",
+          "cachedResultName": "IASE_v5_SW_Risks_v5.3.4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "b26f3771-4869-474b-a2a2-100143113203",
+      "name": "Run Risks",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "IHuucsEVeLESbPU7",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/IHuucsEVeLESbPU7",
+          "cachedResultName": "IASE_v5_SW_Roadmap_v5.3.4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "09b1a084-3d7c-4166-af3e-8fe7ee9fafd8",
+      "name": "Run Roadmap",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        288
+      ],
+      "id": "4d75d074-20d9-479c-9aa9-f12b11be09cd",
+      "name": "Merge Wait Pre-Verdict"
+    },
+    {
+      "parameters": {
+        "jsCode": "function safeNodeJson(nodeName) {\n  try {\n    const node = $(nodeName).first();\n    return node?.json ?? null;\n  } catch (error) {\n    return null;\n  }\n}\n\nconst normalizedInput = safeNodeJson('Normalize Input') || {};\nconst supervisor = safeNodeJson('Run Supervisor') || {};\nconst market = safeNodeJson('Run Market Intelligence') || {};\nconst bmc = safeNodeJson('Run BMC') || {};\nconst strategy = safeNodeJson('Run Strategy') || {};\nconst finance = safeNodeJson('Run Finance') || {};\nconst risks = safeNodeJson('Run Risks') || {};\nconst roadmap = safeNodeJson('Run Roadmap') || {};\n\nconst payload = {\n  request_id: normalizedInput.request_id || null,\n  project_name: normalizedInput.project_name || null,\n  language: normalizedInput.language || 'es',\n  input: normalizedInput,\n  supervisor,\n  market_analysis: market?.market_analysis || market || {},\n  bmc: bmc?.bmc || bmc || {},\n  strategy: strategy?.strategy || strategy || {},\n  finance: finance?.finance || finance || {},\n  risks: risks?.risks || risks || [],\n  roadmap: roadmap?.roadmap || roadmap || {},\n  meta: {\n    assembled_at: new Date().toISOString(),\n    available_modules: {\n      supervisor: !!supervisor,\n      market: !!market,\n      bmc: !!bmc,\n      strategy: !!strategy,\n      finance: !!finance,\n      risks: !!risks,\n      roadmap: !!roadmap\n    }\n  }\n};\n\nreturn [{ json: payload }];"
+      },
+      "id": "a805478c-33a1-4462-9843-ac47b293ea2f",
+      "name": "Assemble Pre-Verdict Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "9rtiMpY5K01VuB8a",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9rtiMpY5K01VuB8a",
+          "cachedResultName": "IASE_v5_SW_Verdict_v5.3.4"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "71a1a54f-673a-4fc3-ac3f-fd42ff56828b",
+      "name": "Run Verdict",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const pre = $('Assemble Pre-Verdict Payload').first().json;\nconst verdict = $('Run Verdict').first().json;\nreturn [{json:{...pre, verdict}}];"
+      },
+      "id": "e5d739d6-350b-4385-960b-49d07e551caa",
+      "name": "Assemble Activities Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "BMIdtMDH9s4aS1PP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/BMIdtMDH9s4aS1PP",
+          "cachedResultName": "IASE_v5_SW_Activities"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "a6707adb-2f68-4f1d-83e8-cdbc8e7cd323",
+      "name": "Run Activities",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1008,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function safeNodeJson(nodeName) {\n  try {\n    const node = $(nodeName).first();\n    return node?.json ?? null;\n  } catch (error) {\n    return null;\n  }\n}\n\nconst normalizedInput = safeNodeJson('Normalize Input') || {};\nconst supervisor = safeNodeJson('Run Supervisor') || {};\nconst market = safeNodeJson('Run Market Intelligence') || {};\nconst bmc = safeNodeJson('Run BMC') || {};\nconst strategy = safeNodeJson('Run Strategy') || {};\nconst finance = safeNodeJson('Run Finance') || {};\nconst risks = safeNodeJson('Run Risks') || {};\nconst roadmap = safeNodeJson('Run Roadmap') || {};\nconst verdict = safeNodeJson('Run Verdict') || {};\nconst activities = safeNodeJson('Run Activities') || {};\n\nconst payload = {\n  request_id: normalizedInput.request_id || null,\n  project_name: normalizedInput.project_name || null,\n  language: normalizedInput.language || 'es',\n  input: normalizedInput,\n  supervisor,\n  market_analysis: market?.market_analysis || market || {},\n  bmc: bmc?.bmc || bmc || {},\n  strategy: strategy?.strategy || strategy || {},\n  finance: finance?.finance || finance || {},\n  risks: risks?.risks || risks || [],\n  roadmap: roadmap?.roadmap || roadmap || {},\n  verdict: verdict?.verdict || verdict || {},\n  activities: activities?.activities || activities || [],\n  meta: {\n    assembled_at: new Date().toISOString(),\n    available_modules: {\n      supervisor: !!supervisor,\n      market: !!market,\n      bmc: !!bmc,\n      strategy: !!strategy,\n      finance: !!finance,\n      risks: !!risks,\n      roadmap: !!roadmap,\n      verdict: !!verdict,\n      activities: !!activities\n    }\n  }\n};\n\nreturn [{ json: payload }];"
+      },
+      "id": "4b166b45-090f-4d43-90c4-4415762d5405",
+      "name": "Assemble Full Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "pZdaXqX6xleSChtF",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pZdaXqX6xleSChtF",
+          "cachedResultName": "IASE_v5_UTIL_Kanban_Generator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "3c295316-1520-4e75-a7d5-6f36b4bea3de",
+      "name": "Run Kanban Generator",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "llAiDnhbzdZ00G9z",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/llAiDnhbzdZ00G9z",
+          "cachedResultName": "IASE_v5_UTIL_Gantt_Generator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "231c1f56-151a-4e72-9e78-4d600a13d1fe",
+      "name": "Run Gantt Generator",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1584,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeWorkflow",
+        "workflowId": {
+          "__rl": true,
+          "value": "IOCbQoJMPZPMIDEr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/IOCbQoJMPZPMIDEr",
+          "cachedResultName": "IASE_v5_2_UTIL_Consolidator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "a6839390-badf-44bd-a432-8a1198c145ac",
+      "name": "Run Consolidator",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function safeNodeJson(nodeName) {\n  try {\n    const node = $(nodeName).first();\n    return node?.json ?? null;\n  } catch (error) {\n    return null;\n  }\n}\n\nconst normalized = safeNodeJson('Normalize Input') || {};\nconst fullPayload = safeNodeJson('Assemble Full Payload') || {};\nconst consolidated = safeNodeJson('Run Consolidator') || {};\nconst kanbanRaw = safeNodeJson('Run Kanban Generator') || {};\nconst ganttRaw = safeNodeJson('Run Gantt Generator') || {};\n\nconst kanban =\n  kanbanRaw?.kanban ||\n  kanbanRaw?.board ||\n  kanbanRaw?.items ||\n  kanbanRaw ||\n  [];\n\nconst gantt =\n  ganttRaw?.gantt ||\n  ganttRaw?.timeline ||\n  ganttRaw?.tasks ||\n  ganttRaw ||\n  [];\n\nconst summary =\n  consolidated?.summary ||\n  consolidated?.result?.summary ||\n  {};\n\nconst verdict =\n  consolidated?.verdict ||\n  fullPayload?.verdict ||\n  consolidated?.result?.verdict ||\n  {};\n\nconst scores =\n  consolidated?.scores ||\n  consolidated?.result?.scores ||\n  {};\n\nconst finalResult = {\n  request_id: normalized.request_id || consolidated?.request_id || null,\n  project_name: consolidated?.project_name || normalized.project_name || null,\n  status: consolidated?.status || 'completed',\n  summary,\n  scores,\n  verdict,\n  market_analysis:\n    consolidated?.market_analysis ||\n    fullPayload?.market_analysis ||\n    consolidated?.result?.market_analysis ||\n    {},\n  business_model_canvas:\n    consolidated?.bmc ||\n    fullPayload?.bmc ||\n    consolidated?.result?.bmc ||\n    consolidated?.result?.business_model_canvas ||\n    {},\n  strategy:\n    consolidated?.strategy ||\n    fullPayload?.strategy ||\n    consolidated?.result?.strategy ||\n    {},\n  financials:\n    consolidated?.finance ||\n    fullPayload?.finance ||\n    consolidated?.result?.finance ||\n    consolidated?.result?.financials ||\n    {},\n  risks:\n    consolidated?.risks ||\n    fullPayload?.risks ||\n    consolidated?.result?.risks ||\n    [],\n  roadmap:\n    consolidated?.roadmap ||\n    fullPayload?.roadmap ||\n    consolidated?.result?.roadmap ||\n    {},\n  activities:\n    consolidated?.activities ||\n    fullPayload?.activities ||\n    consolidated?.result?.activities ||\n    [],\n  kanban,\n  gantt,\n  raw_consolidated: consolidated\n};\n\nreturn [{\n  json: {\n    success: true,\n    request_id: finalResult.request_id,\n    project_name: finalResult.project_name,\n    status: finalResult.status,\n    result: finalResult,\n    metrics: {\n      workflow_version: normalized?.meta?.workflow_version || 'v5.3-enterprise-core-v2.3',\n      generated_at: new Date().toISOString()\n    },\n    error: null\n  }\n}];"
+      },
+      "id": "fcc2d5c8-246c-4df7-a22b-18a1d33ff8df",
+      "name": "Format Final Output v2.3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1952,
+        336
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Run Supervisor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Input + Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Supervisor": {
+      "main": [
+        [
+          {
+            "node": "Merge Input + Supervisor",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Input + Supervisor": {
+      "main": [
+        [
+          {
+            "node": "Run Market Intelligence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Core Payload": {
+      "main": [
+        [
+          {
+            "node": "Run BMC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Strategy",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Finance",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Risks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Roadmap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run BMC": {
+      "main": [
+        [
+          {
+            "node": "Merge Wait Pre-Verdict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Strategy": {
+      "main": [
+        [
+          {
+            "node": "Merge Wait Pre-Verdict",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Run Finance": {
+      "main": [
+        [
+          {
+            "node": "Merge Wait Pre-Verdict",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Run Risks": {
+      "main": [
+        [
+          {
+            "node": "Merge Wait Pre-Verdict",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Run Roadmap": {
+      "main": [
+        [
+          {
+            "node": "Merge Wait Pre-Verdict",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Assemble Pre-Verdict Payload": {
+      "main": [
+        [
+          {
+            "node": "Run Verdict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Verdict": {
+      "main": [
+        [
+          {
+            "node": "Assemble Activities Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Activities Payload": {
+      "main": [
+        [
+          {
+            "node": "Run Activities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Activities": {
+      "main": [
+        [
+          {
+            "node": "Assemble Full Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Full Payload": {
+      "main": [
+        [
+          {
+            "node": "Run Kanban Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Consolidator": {
+      "main": [
+        [
+          {
+            "node": "Format Final Output v2.3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Kanban Generator": {
+      "main": [
+        [
+          {
+            "node": "Run Gantt Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Gantt Generator": {
+      "main": [
+        [
+          {
+            "node": "Run Consolidator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Market Intelligence": {
+      "main": [
+        [
+          {
+            "node": "Assemble Core Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Wait Pre-Verdict": {
+      "main": [
+        [
+          {
+            "node": "Assemble Pre-Verdict Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Sub-workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ba3b3af7-1a3d-468e-a808-61b450289e64",
+  "meta": {
+    "instanceId": "7f9ba910a29f5e215a4b4a694ee3408825b7b8212157cd2e725d3dcd110c61dc"
+  },
+  "id": "ZinZ5rS9LJPZZ0EV",
+  "tags": []
+}

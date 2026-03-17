@@ -1,0 +1,11 @@
+-- Solo para BDs antiguas: si analysis_requests no tiene las columnas del chat gateway,
+-- ejecutar estas líneas. La estructura de referencia es mysql/innexia.sql (ya las incluye).
+
+-- ALTER TABLE `analysis_requests` ADD COLUMN `progress` int(11) DEFAULT 0;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `current_stage` varchar(100) DEFAULT NULL;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `callback_url` varchar(500) DEFAULT NULL;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `completed_at` datetime DEFAULT NULL;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `error_code` varchar(100) DEFAULT NULL;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `user_id` varchar(100) DEFAULT NULL;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `session_id` varchar(100) DEFAULT NULL;
+-- ALTER TABLE `analysis_requests` ADD COLUMN `input_message` text DEFAULT NULL;
