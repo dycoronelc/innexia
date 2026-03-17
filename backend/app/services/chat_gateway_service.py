@@ -204,16 +204,16 @@ def process_strategy_callback(
 
         existing = db.query(AnalysisResult).filter(AnalysisResult.request_id == request_id).first()
         if existing:
-        existing.result_json = consolidated
-        existing.executive_summary = executive
-    else:
-        db.add(
-            AnalysisResult(
-                request_id=request_id,
-                result_json=consolidated,
-                executive_summary=executive,
+            existing.result_json = consolidated
+            existing.executive_summary = executive
+        else:
+            db.add(
+                AnalysisResult(
+                    request_id=request_id,
+                    result_json=consolidated,
+                    executive_summary=executive,
+                )
             )
-        )
         db.commit()
 
         pid = project_id or (ar.project_id if ar else None)
